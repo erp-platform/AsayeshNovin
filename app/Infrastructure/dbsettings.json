@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "default": "Host=localhost;Port=5432;Database=ansp;Username=postgres;Password=123456"
+  }
+}

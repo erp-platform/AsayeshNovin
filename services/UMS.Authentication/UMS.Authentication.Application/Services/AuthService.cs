@@ -1,8 +1,9 @@
+using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Interfaces;
 using UMS.Authentication.Application.Utility;
 using UMS.Authentication.Domain.Entities;
-using UMS.Authentication.Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Scrypt;
 using static System.String;
@@ -16,20 +17,20 @@ public class AuthService : IAuthService
 
     private readonly HttpClient _httpClient;
 
-    private readonly ICrudService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto> _userChannelService;
-    private readonly ICrudService<Verification, VerificationCreateDto, VerificationUpdateDto> _verificationService;
-    private readonly ICrudService<User, UserCreateDto, UserUpdateDto> _userService;
-    private readonly ICrudService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto> _passwordResetService;
+    private readonly IBaseService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto> _userChannelService;
+    private readonly IBaseService<Verification, VerificationCreateDto, VerificationUpdateDto> _verificationService;
+    private readonly IBaseService<User, UserCreateDto, UserUpdateDto> _userService;
+    private readonly IBaseService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto> _passwordResetService;
 
-    private readonly IRepository<Channel> _channelRepository;
+    private readonly IBaseRepository<Channel> _channelRepository;
 
-    private readonly ScryptEncoder _encoder = new ScryptEncoder();
+    private readonly ScryptEncoder _encoder = new();
 
-    public AuthService(ICrudService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto> userChannelService,
-        ICrudService<Verification, VerificationCreateDto, VerificationUpdateDto> verificationService,
-        IRepository<Channel> channelRepository,
-        ICrudService<User, UserCreateDto, UserUpdateDto> userService,
-        ICrudService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto> passwordResetService,
+    public AuthService(IBaseService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto> userChannelService,
+        IBaseService<Verification, VerificationCreateDto, VerificationUpdateDto> verificationService,
+        IBaseRepository<Channel> channelRepository,
+        IBaseService<User, UserCreateDto, UserUpdateDto> userService,
+        IBaseService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto> passwordResetService,
         HttpClient httpClient)
     {
         _userChannelService = userChannelService;
@@ -43,7 +44,7 @@ public class AuthService : IAuthService
     public async Task<UserChannel> Register(SignUpDto signUpDto)
     {
         var oldUserChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
-            userChannel?.Channel.Id == signUpDto.ChannelId &&
+            userChannel?.Channel.AId == signUpDto.ChannelId &&
             userChannel.Value == signUpDto.Value, null);
         var userChannel = await (oldUserChannel == null
             ? HandleNewRegister(signUpDto)
@@ -54,7 +55,7 @@ public class AuthService : IAuthService
 
     public async Task<UserChannel> Verify(VerifyDto verifyDto)
     {
-        var userChannel = await _userChannelService.GetByIdAsync(verifyDto.UserChannelId);
+        var userChannel = await _userChannelService.FindByIdAsync(verifyDto.UserChannelId);
         var verification = userChannel?.Verification;
         if (verification == null)
             throw new Exception(
@@ -75,7 +76,7 @@ public class AuthService : IAuthService
 
     public async Task<User> SetCredential(CredentialDto credentialDto)
     {
-        var userChannel = await _userChannelService.GetByIdAsync(credentialDto.UserChannelId);
+        var userChannel = await _userChannelService.FindByIdAsync(credentialDto.UserChannelId);
         if (userChannel == null)
             throw new ArgumentException($"There's no UserChannel with id: \"{credentialDto.UserChannelId}\"");
         var verification = userChannel.Verification;
@@ -112,9 +113,10 @@ public class AuthService : IAuthService
     {
         var result = Task.FromResult(passwordResetRequestDto);
 
-        var userChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
-            userChannel?.Channel.Id == passwordResetRequestDto.ChannelId &&
-            userChannel.Value == passwordResetRequestDto.Value, null);
+        var userChannel = (await _userChannelService.GetDbSet()
+            .Where(uc => uc.Channel.AId == passwordResetRequestDto.ChannelId)
+            .Where(uc => uc.Value == passwordResetRequestDto.Value)
+            .ToListAsync()).FirstOrDefault();
         if (userChannel == null)
             return await result;
         var token = Helpers.GeneratePasswordResetToken();
@@ -181,7 +183,10 @@ public class AuthService : IAuthService
 
     private async Task<UserChannel> HandleNewRegister(SignUpDto signUpDto)
     {
-        var channel = await _channelRepository.GetByIdAsync(signUpDto.ChannelId);
+        var channel = (await _channelRepository.GetDbSet()
+            .Where(ch => ch.AId == signUpDto.ChannelId)
+            .ToListAsync()).FirstOrDefault();
+        
         if (channel != null)
         {
             var userChannel = await _userChannelService.CreateAsync(new UserChannelCreateDto

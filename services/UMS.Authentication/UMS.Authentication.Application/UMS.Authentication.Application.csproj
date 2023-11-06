@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\app\Infrastructure\Infrastructure.csproj" />
         <ProjectReference Include="..\UMS.Authentication.Infrastructure\UMS.Authentication.Infrastructure.csproj"/>
 
     </ItemGroup>

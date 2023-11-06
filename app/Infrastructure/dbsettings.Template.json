@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "default": "Host=;Port=;Database=;Username=;Password="
+  }
+}

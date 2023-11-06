@@ -1,12 +1,12 @@
+using Infrastructure.Interfaces;
 using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Domain.Entities;
-using UMS.Authentication.Infrastructure.Interfaces;
 
 namespace UMS.Authentication.Application.Services;
 
-public class UserChannelService : CrudService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto>
+public class UserChannelService : BaseService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto>
 {
-    public UserChannelService(ICrudRepository<UserChannel> repository) :
+    public UserChannelService(IBaseRepository<UserChannel> repository) :
         base(repository)
     {
     }
@@ -23,7 +23,7 @@ public class UserChannelService : CrudService<UserChannel, UserChannelCreateDto,
 
     public override async Task<UserChannel?> UpdateAsync(Guid id, UserChannelUpdateDto updateDto)
     {
-        var userChannel = await Repository.GetByIdAsync(id);
+        var userChannel = await Repository.FindByIdAsync(id);
         if (userChannel == null)
             throw new Exception($"There's not UserChannel with id: \"{id}\"");
         userChannel.IsDefault = updateDto.IsDefault;

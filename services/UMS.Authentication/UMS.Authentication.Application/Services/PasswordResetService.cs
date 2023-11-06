@@ -1,12 +1,12 @@
+using Infrastructure.Interfaces;
 using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Domain.Entities;
-using UMS.Authentication.Infrastructure.Interfaces;
 
 namespace UMS.Authentication.Application.Services;
 
-public class PasswordResetService : CrudService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto>
+public class PasswordResetService : BaseService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto>
 {
-    public PasswordResetService(ICrudRepository<PasswordReset> repository) : base(repository)
+    public PasswordResetService(IBaseRepository<PasswordReset> repository) : base(repository)
     {
     }
 
@@ -22,7 +22,7 @@ public class PasswordResetService : CrudService<PasswordReset, PasswordResetCrea
 
     public override async Task<PasswordReset?> UpdateAsync(Guid id, PasswordResetUpdateDto updateDto)
     {
-        var passwordReset = await Repository.GetByIdAsync(id);
+        var passwordReset = await Repository.FindByIdAsync(id);
         if (passwordReset == null)
             throw new Exception($"There's no PasswordReset with id: \"{id}\"");
         if (updateDto.UserChannel != null)

@@ -3,8 +3,9 @@
 namespace UMS.Authentication.Domain.Entities;
 
 [Table("Channels")]
-public class Channel
+public class Channel : BaseEntity
 {
-    public required int Id { get; set; }
-    public required string Name { get; set; }
+    // Autoincrement Id
+    public required int AId { get; set; }
+    public required string? Name { get; set; }
 }
