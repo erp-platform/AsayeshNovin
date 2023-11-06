@@ -1,13 +1,13 @@
-﻿using UMS.Authentication.Application.Dtos;
+﻿using Infrastructure.Interfaces;
+using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Domain.Entities;
-using UMS.Authentication.Infrastructure.Interfaces;
 using Scrypt;
 
 namespace UMS.Authentication.Application.Services;
 
-public class UserService : CrudService<User, UserCreateDto, UserUpdateDto>
+public class UserService : BaseService<User, UserCreateDto, UserUpdateDto>
 {
-    public UserService(ICrudRepository<User> repository) : base(repository)
+    public UserService(IBaseRepository<User> repository) : base(repository)
     {
     }
 
@@ -23,7 +23,7 @@ public class UserService : CrudService<User, UserCreateDto, UserUpdateDto>
 
     public override async Task<User?> UpdateAsync(Guid id, UserUpdateDto updateDto)
     {
-        var user = await Repository.GetByIdAsync(id);
+        var user = await Repository.FindByIdAsync(id);
 
         if (user == null)
         {
