@@ -304,7 +304,7 @@ public class AuthService : IAuthService
     {
         if (userChannel.Verification == null)
             throw new Exception($"Verification for UserChannel with id: \"{userChannel.Id}\" is null.");
-        await SendSms("Verify", userChannel.Value, userChannel.Verification.Code);
+        await SendSms("Verify", userChannel.Verification.Code, userChannel.Value);
     }
 
     private async Task SendSms(string templateKey, string text, string receptor)
