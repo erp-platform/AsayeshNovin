@@ -1,0 +1,288 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Projects\\AsayeshNovin\\api\\api.csproj": {}
+  },
+  "projects": {
+    "C:\\Projects\\AsayeshNovin\\api\\api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Projects\\AsayeshNovin\\api\\api.csproj",
+        "projectName": "api",
+        "projectPath": "C:\\Projects\\AsayeshNovin\\api\\api.csproj",
+        "packagesPath": "C:\\Users\\MOSLEM\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\AsayeshNovin\\api\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\MOSLEM\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Application\\UMS.Authentication.Application.csproj": {
+                "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Application\\UMS.Authentication.Application.csproj"
+              },
+              "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj": {
+                "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Application\\UMS.Authentication.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Application\\UMS.Authentication.Application.csproj",
+        "projectName": "UMS.Authentication.Application",
+        "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Application\\UMS.Authentication.Application.csproj",
+        "packagesPath": "C:\\Users\\MOSLEM\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\MOSLEM\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Infrastructure\\UMS.Authentication.Infrastructure.csproj": {
+                "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Infrastructure\\UMS.Authentication.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Scrypt.NET": {
+              "target": "Package",
+              "version": "[1.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj",
+        "projectName": "UMS.Authentication.Domain",
+        "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj",
+        "packagesPath": "C:\\Users\\MOSLEM\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\MOSLEM\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Infrastructure\\UMS.Authentication.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Infrastructure\\UMS.Authentication.Infrastructure.csproj",
+        "projectName": "UMS.Authentication.Infrastructure",
+        "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Infrastructure\\UMS.Authentication.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\MOSLEM\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\MOSLEM\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj": {
+                "projectPath": "C:\\Projects\\AsayeshNovin\\services\\UMS.Authentication\\UMS.Authentication.Domain\\UMS.Authentication.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.Proxies": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

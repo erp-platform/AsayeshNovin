@@ -1,0 +1,7 @@
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.csproj.AssemblyReference.cache
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.AssemblyInfoInputs.cache
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.AssemblyInfo.cs
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.csproj.CoreCompileInputs.cache
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.MvcApplicationPartsAssemblyInfo.cs
+C:\Projects\AsayeshNovin\api\obj\Debug\net7.0\api.MvcApplicationPartsAssemblyInfo.cache
