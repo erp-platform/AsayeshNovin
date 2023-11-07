@@ -25,6 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="dbsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Update="dbsettings.Template.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
