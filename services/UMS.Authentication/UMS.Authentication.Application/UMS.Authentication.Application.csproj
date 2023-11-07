@@ -13,6 +13,8 @@
 
     <ItemGroup>
         <PackageReference Include="Scrypt.NET" Version="1.3.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13"/>
     </ItemGroup>
 
     <PropertyGroup>

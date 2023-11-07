@@ -9,11 +9,21 @@ public class AppDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("dbsettings.json").Build();
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         if (string.IsNullOrEmpty(environment))
             environment = "Development";
-        var connectionString = configuration.GetSection("ConnectionStrings")[environment];
+        var connectionString = "";
+        switch (environment)
+        {
+            case "Development":
+                var configuration = new ConfigurationBuilder().AddJsonFile("dbsettings.json").Build();
+                connectionString = configuration.GetSection("ConnectionStrings")[environment];
+                break;
+            case "Production":
+                connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                break;
+        }
+
         optionsBuilder.UseNpgsql(connectionString);
         optionsBuilder.UseLazyLoadingProxies();
     }
@@ -51,7 +61,7 @@ public class AppDbContext : DbContext
     {
         // UMS.Authentication
         new ChannelSeeder(modelBuilder).Seed();
-        
+
         base.OnModelCreating(modelBuilder);
     }
 }
