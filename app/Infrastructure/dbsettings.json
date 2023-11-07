@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "default": "Host=finn.iran.liara.ir;Port=31870;Database=postgres;Username=root;Password=tQWZA4CehYVtBfUVruHTTMNb"
+  }
+}
