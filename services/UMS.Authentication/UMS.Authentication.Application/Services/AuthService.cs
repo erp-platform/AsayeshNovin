@@ -46,7 +46,7 @@ public class AuthService : IAuthService
         _channelRepository = channelRepository;
     }
 
-    public async Task<UserChannel> Register(SignUpDto signUpDto)
+    public async Task<UserChannel> SignUp(SignUpDto signUpDto)
     {
         var oldUserChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
             userChannel?.Channel.AId == signUpDto.ChannelId &&
@@ -84,6 +84,9 @@ public class AuthService : IAuthService
         var userChannel = await _userChannelService.FindByIdAsync(credentialDto.UserChannelId);
         if (userChannel == null)
             throw new ArgumentException($"There's no UserChannel with id: \"{credentialDto.UserChannelId}\"");
+        if (userChannel.User != null)
+            throw new Exception(
+                $"Credential for the User with UserChannel with id: \"{credentialDto.UserChannelId}\" is already set.");
         var verification = userChannel.Verification;
         if (verification == null)
             throw new ArgumentException($"UserChannel with id: \"{userChannel.Id}\" has no Verification.");
