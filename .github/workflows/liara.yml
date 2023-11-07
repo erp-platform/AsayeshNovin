@@ -14,7 +14,7 @@ jobs:
           node-version: "18"
       - name: update-liara
         env:
-          LIARA_TOKEN: ${{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2NTQ3YTc5NTQxZjc3N2M2ZjE1ODRmY2QiLCJpYXQiOjE2OTkzNDA1Mzd9.aWzpuLD-ARc-SNYcDBDjTi6kiuEBsooTNr1w_ZADc2E }}
+          LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
         run: |
           npm i -g @liara/cli@5
           liara deploy --app="ansp" --api-token="$LIARA_TOKEN" --no-app-logs
