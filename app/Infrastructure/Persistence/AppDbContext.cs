@@ -10,9 +10,11 @@ public class AppDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("dbsettings.json").Build();
-        var connectionString = configuration.GetSection("ConnectionStrings")["Default"];
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (string.IsNullOrEmpty(environment))
+            environment = "Development";
+        var connectionString = configuration.GetSection("ConnectionStrings")[environment];
         optionsBuilder.UseNpgsql(connectionString);
-        Console.Write($"Connection String: {connectionString}");
         optionsBuilder.UseLazyLoadingProxies();
     }
 
