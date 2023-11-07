@@ -5,7 +5,7 @@ namespace UMS.Authentication.Application.Interfaces;
 
 public interface IAuthService
 {
-    public Task<UserChannel> Register(SignUpDto signUpDto);
+    public Task<UserChannel> SignUp(SignUpDto signUpDto);
 
     public Task<UserChannel> Verify(VerifyDto verifyDto);
 
