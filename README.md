@@ -1,2 +1,2 @@
 # AsayeshNovin
-The web service of the website of the company "Asayesh Novin Salamat Pasargad" which is developing based on the ERP platform 
+The web service of the website of the company of "Asayesh Novin Salamat Pasargad", which is being developed based on the ERP platform 
