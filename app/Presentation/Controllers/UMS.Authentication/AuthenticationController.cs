@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Interfaces;
@@ -18,6 +19,7 @@ public class AuthenticationController : ControllerBase
         _authService = authService;
     }
 
+    [AllowAnonymous]
     [ProducesResponseType(typeof(UserChannel), 200)]
     [HttpPost("SignUp")]
     public async Task<IActionResult> SignUp(SignUpDto signUpDto)
@@ -49,7 +51,7 @@ public class AuthenticationController : ControllerBase
     /// </summary>
     /// <param name="loginDto"></param>
     /// <returns></returns>
-    [ProducesResponseType(typeof(User), 200)]
+    [ProducesResponseType(typeof(LoginResponseDto), 200)]
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
