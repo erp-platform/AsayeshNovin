@@ -44,4 +44,4 @@ msbuild.wrn
 
 /Migrations/
 
-appsettings.json
+#appsettings.json
