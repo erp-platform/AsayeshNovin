@@ -17,7 +17,7 @@ public class AppDbContext : DbContext
         {
             case "Development":
                 var configuration = new ConfigurationBuilder().AddJsonFile("dbsettings.json").Build();
-                connectionString = configuration.GetSection("ConnectionStrings")[environment];
+                connectionString = configuration.GetSection("ConnectionStrings")["default"];
                 break;
             case "Production":
                 connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
