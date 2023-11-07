@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Mvc;
 using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Interfaces;
 using UMS.Authentication.Domain.Entities;
@@ -11,17 +12,10 @@ namespace Presentation.Controllers;
 [Produces("application/json")]
 public class TestController:ControllerBase
 {
-    private readonly IBaseService<User, UserCreateDto, UserUpdateDto> _userService;
-
-    public TestController(IBaseService<User, UserCreateDto, UserUpdateDto> userService)
-    {
-        _userService = userService;
-    }
-
     [HttpGet("Db")]
     public virtual async Task<IActionResult> Db()
     {
-        return Ok(await _userService.GetAllAsync());
+        return Ok(await new AppDbContext().Database.CanConnectAsync());
     }
     
     [HttpGet("Ping")]
