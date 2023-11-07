@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Infrastructure.Persistence;
 using UMS.Authentication.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -88,12 +87,5 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     private async Task<TEntity?> SaveAsyncChanges(TEntity entity)
     {
         return await _context.SaveChangesAsync() > 0 ? entity : null;
-    }
-
-    private string? TableName()
-    {
-        return _context.Model
-            .FindEntityType(typeof(TEntity))
-            ?.GetTableName();
     }
 }
