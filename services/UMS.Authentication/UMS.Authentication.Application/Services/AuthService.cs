@@ -6,6 +6,7 @@ using UMS.Authentication.Application.Utility;
 using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Scrypt;
+using UMS.Authentication.Application.Authorization;
 using static System.String;
 
 namespace UMS.Authentication.Application.Services;
@@ -26,16 +27,20 @@ public class AuthService : IAuthService
 
     private readonly ScryptEncoder _encoder = new();
 
+    private readonly IJwtUtils _jwtUtils;
+
     public AuthService(IBaseService<UserChannel, UserChannelCreateDto, UserChannelUpdateDto> userChannelService,
         IBaseService<Verification, VerificationCreateDto, VerificationUpdateDto> verificationService,
         IBaseRepository<Channel> channelRepository,
         IBaseService<User, UserCreateDto, UserUpdateDto> userService,
         IBaseService<PasswordReset, PasswordResetCreateDto, PasswordResetUpdateDto> passwordResetService,
-        HttpClient httpClient)
+        HttpClient httpClient,
+        IJwtUtils jwtUtils)
     {
         _userChannelService = userChannelService;
         _verificationService = verificationService;
         _httpClient = httpClient;
+        _jwtUtils = jwtUtils;
         _passwordResetService = passwordResetService;
         _userService = userService;
         _channelRepository = channelRepository;
@@ -99,14 +104,18 @@ public class AuthService : IAuthService
             $"Failed to create User for UserChannel with id: \"{userChannel.Id}\" and Verification with id: \"{verification.Id}\"");
     }
 
-    public async Task<User> Login(LoginDto loginDto)
+    public async Task<LoginResponseDto> Login(LoginDto loginDto)
     {
         var user = (await _userService.GetAllAsync()).FirstOrDefault(u =>
             u?.Username == loginDto.Username &&
             _encoder.Compare(loginDto.Password, u.Password), null);
         if (user == null)
             throw new Exception("Username or password is incorrect.");
-        return user;
+        return new LoginResponseDto
+        {
+            User = user,
+            Token = _jwtUtils.GenerateJwtToken(user)
+        };
     }
 
     public async Task<PasswordResetRequestDto> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto)
@@ -186,7 +195,7 @@ public class AuthService : IAuthService
         var channel = (await _channelRepository.GetDbSet()
             .Where(ch => ch.AId == signUpDto.ChannelId)
             .ToListAsync()).FirstOrDefault();
-        
+
         if (channel != null)
         {
             var userChannel = await _userChannelService.CreateAsync(new UserChannelCreateDto

@@ -2,9 +2,11 @@
 using UMS.Authentication.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Interfaces;
+using UMS.Authentication.Application.Authorization;
 
 namespace Presentation.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 [Consumes("application/json")]
