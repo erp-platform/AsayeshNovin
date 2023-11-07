@@ -10,18 +10,11 @@ namespace Presentation.Controllers;
 [Produces("application/json")]
 public class TestController : ControllerBase
 {
-    private class Error
-    {
-        public string? Message { get; set; }
-        public string? Stacktrace { get; set; }
-    }
-
     /// <summary>
     /// Test whether DB can connect or not
     /// </summary>
     /// <returns>true/false</returns>
     [Produces(typeof(bool))]
-    [ProducesResponseType(typeof(Error), 500)]
     [HttpGet("Db")]
     public async Task<IActionResult> Db()
     {
@@ -31,9 +24,9 @@ public class TestController : ControllerBase
         }
         catch (Exception e)
         {
-            return new JsonResult(new Error { Message = e.Message, Stacktrace = e.StackTrace })
+            return new JsonResult(new { e.Message, Stacktrace = e.StackTrace })
             {
-                StatusCode = 500
+                StatusCode = StatusCodes.Status500InternalServerError
             };
         }
     }

@@ -9,9 +9,6 @@ namespace Presentation.Controllers;
 /// <summary>
 /// Basic CRUD Controller
 /// </summary>
-/// <typeparam name="TEntity"></typeparam>
-/// <typeparam name="TCreateDto"></typeparam>
-/// <typeparam name="TUpdateDto"></typeparam>
 [Authorize]
 [ApiController]
 [Route("[controller]")]
@@ -33,7 +30,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// <summary>
     /// Get all items
     /// </summary>
-    /// <returns></returns>
     [HttpGet]
     public virtual async Task<IActionResult> GetAllAsync()
     {
@@ -44,7 +40,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// Get by id
     /// </summary>
     /// <param name="id">Item's id</param>
-    /// <returns></returns>
     [HttpGet("{id:guid}")]
     public virtual async Task<IActionResult> GetByIdAsync(Guid id)
     {
@@ -55,7 +50,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// Create new item
     /// </summary>
     /// <param name="createDto"></param>
-    /// <returns></returns>
     [HttpPost]
     public virtual async Task<IActionResult> CreateAsync([FromBody] TCreateDto createDto)
     {
@@ -67,7 +61,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// </summary>
     /// <param name="id">Item's id</param>
     /// <param name="updateDto"></param>
-    /// <returns></returns>
     [HttpPut("{id:guid}")]
     public virtual async Task<IActionResult> UpdateAsync(Guid id, [FromBody] TUpdateDto updateDto)
     {
@@ -78,7 +71,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// Soft delete item
     /// </summary>
     /// <param name="id">Item's id</param>
-    /// <returns></returns>
     [HttpPost("delete/{id:guid}")]
     public virtual async Task<IActionResult> Delete(Guid id)
     {
@@ -89,7 +81,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// Restore soft deleted item
     /// </summary>
     /// <param name="id">Item's id</param>
-    /// <returns></returns>
     [HttpPost("restore/{id:guid}")]
     public virtual async Task<IActionResult> Restore(Guid id)
     {
@@ -100,7 +91,6 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     /// Force delete item
     /// </summary>
     /// <param name="id">Item's id</param>
-    /// <returns></returns>
     [HttpDelete("{id:guid}")]
     public virtual async Task<IActionResult> ForceDeleteAsync(Guid id)
     {
