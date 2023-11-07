@@ -1,8 +1,6 @@
 ﻿using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using UMS.Authentication.Application.Dtos;
-using UMS.Authentication.Application.Interfaces;
-using UMS.Authentication.Domain.Entities;
+using UMS.Authentication.Application.Authorization;
 
 namespace Presentation.Controllers;
 
@@ -10,17 +8,52 @@ namespace Presentation.Controllers;
 [Route("[controller]")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public class TestController:ControllerBase
+public class TestController : ControllerBase
 {
-    [HttpGet("Db")]
-    public virtual async Task<IActionResult> Db()
+    private class Error
     {
-        return Ok(await new AppDbContext().Database.CanConnectAsync());
+        public string? Message { get; set; }
+        public string? Stacktrace { get; set; }
     }
-    
-    [HttpGet("Ping")]
-    public virtual Task<IActionResult> Ping()
+
+    /// <summary>
+    /// Test whether DB can connect or not
+    /// </summary>
+    /// <returns>true/false</returns>
+    [Produces(typeof(bool))]
+    [ProducesResponseType(typeof(Error), 500)]
+    [HttpGet("Db")]
+    public async Task<IActionResult> Db()
     {
-        return Task.FromResult<IActionResult>(Ok("Pong"));
+        try
+        {
+            return Ok(await new AppDbContext().Database.CanConnectAsync());
+        }
+        catch (Exception e)
+        {
+            return new JsonResult(new Error { Message = e.Message, Stacktrace = e.StackTrace })
+            {
+                StatusCode = 500
+            };
+        }
+    }
+
+    /// <summary>
+    /// This route always returns Pong
+    /// </summary>
+    /// <returns>Pong</returns>
+    [ProducesResponseType(typeof(string), 200)]
+    [HttpGet("Ping")]
+    public Task<IActionResult> Ping() => Task.FromResult<IActionResult>(Ok("Pong"));
+
+    [Authorize]
+    [HttpGet("UserAgent")]
+    public JsonResult UserAgent()
+    {
+        return new JsonResult(new
+        {
+            IP = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            Client = Request.Headers["User-Agent"].ToString()
+        });
     }
 }
