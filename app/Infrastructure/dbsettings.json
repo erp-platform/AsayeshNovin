@@ -1,6 +1,0 @@
-﻿{
-  "ConnectionStrings": {
-    "Development": "Host=localhost;Port=5432;Database=ansp;Username=postgres;Password=123456",
-    "Production": "Host=finn.iran.liara.ir;Port=31870;Database=postgres;Username=root;Password=tQWZA4CehYVtBfUVruHTTMNb"
-  }
-}

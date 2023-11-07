@@ -44,4 +44,4 @@ msbuild.wrn
 
 /Migrations/
 
-#dbsettings.json
+dbsettings.json
