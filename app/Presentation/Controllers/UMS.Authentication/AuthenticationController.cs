@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Utility;
-using UMS.Authentication.Application.Dtos;
+using UMS.Authentication.Application.Dtos.Auth;
 using UMS.Authentication.Application.Interfaces;
 
 namespace Presentation.Controllers.UMS.Authentication;
@@ -27,13 +27,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("SignUp")]
     public async Task<IActionResult> SignUp(SignUpDto signUpDto)
     {
-        var userChannel = await _authService.SignUp(signUpDto);
-        return Ok(new
-        {
-            userChannel.Channel.Name,
-            userChannel.Value,
-            userChannel.Id
-        });
+        return Ok(await _authService.SignUp(signUpDto));
     }
 
     /// <summary>
@@ -42,13 +36,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("Verify")]
     public async Task<IActionResult> Verify(VerifyDto verifyDto)
     {
-        var userChannel = await _authService.Verify(verifyDto);
-        return Ok(new
-        {
-            userChannel.Channel.Name,
-            userChannel.Value,
-            userChannel.User?.Username
-        });
+        return Ok(await _authService.Verify(verifyDto));
     }
 
     /// <summary>
@@ -69,9 +57,9 @@ public class AuthenticationController : ControllerBase
     /// Login with Username and Password
     /// </summary>
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginDto loginDto)
+    public async Task<IActionResult> Login(AuthLoginDto authLoginDto)
     {
-        var response = await _authService.Login(loginDto);
+        var response = await _authService.Login(authLoginDto);
         return Ok(new
         {
             response.User.Username,

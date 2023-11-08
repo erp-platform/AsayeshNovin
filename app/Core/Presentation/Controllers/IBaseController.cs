@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Interfaces;
+namespace Core.Presentation.Controllers;
 
 public interface IBaseController<in TCreateDto, in TUpdateDto>
     where TCreateDto : class

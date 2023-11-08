@@ -1,6 +1,6 @@
-namespace UMS.Authentication.Application.Dtos;
+namespace UMS.Authentication.Application.Dtos.Auth;
 
-public class LoginDto
+public class AuthLoginDto
 {
     /// <example>ObiWanKenobi</example>
     public required string Username { get; set; }

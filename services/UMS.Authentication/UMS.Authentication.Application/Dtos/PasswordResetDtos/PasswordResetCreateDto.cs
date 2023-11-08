@@ -1,6 +1,6 @@
 using UMS.Authentication.Domain.Entities;
 
-namespace UMS.Authentication.Application.Dtos;
+namespace UMS.Authentication.Application.Dtos.PasswordResetDtos;
 
 public class PasswordResetCreateDto
 {

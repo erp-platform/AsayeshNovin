@@ -1,8 +1,8 @@
 ﻿using Core.Application.Services;
 using Core.Infrastructure.Repositories;
-using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Domain.Entities;
 using Scrypt;
+using UMS.Authentication.Application.Dtos.UserDtos;
 
 namespace UMS.Authentication.Application.Services;
 
