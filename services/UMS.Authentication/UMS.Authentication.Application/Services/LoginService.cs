@@ -1,6 +1,7 @@
 ﻿using Core.Application.Services;
 using Core.Infrastructure.Repositories;
 using UMS.Authentication.Application.Dtos;
+using UMS.Authentication.Application.Dtos.LoginDtos;
 using UMS.Authentication.Domain.Entities;
 
 namespace UMS.Authentication.Application.Services;

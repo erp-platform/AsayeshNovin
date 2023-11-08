@@ -1,4 +1,4 @@
-namespace UMS.Authentication.Application.Dtos;
+namespace UMS.Authentication.Application.Dtos.Auth;
 
 public class VerifyDto
 {

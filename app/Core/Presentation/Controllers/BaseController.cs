@@ -1,7 +1,6 @@
 ﻿using Core.Application.Services;
 using Core.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Interfaces;
 
 namespace Core.Presentation.Controllers;
 
@@ -12,17 +11,22 @@ namespace Core.Presentation.Controllers;
 [Route("[controller]")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public class BaseController<TEntity, TCreateDto, TUpdateDto>
+public class BaseController<TEntity, TCreateDto, TUpdateDto, TResponseDto>
     : ControllerBase, IBaseController<TCreateDto, TUpdateDto>
     where TEntity : BaseEntity
     where TCreateDto : class
     where TUpdateDto : class
 {
     private readonly IBaseService<TEntity, TCreateDto, TUpdateDto> _service;
+    private readonly Func<TEntity?, TResponseDto> _mapper;
 
-    public BaseController(IBaseService<TEntity, TCreateDto, TUpdateDto> service)
+    public BaseController(
+        IBaseService<TEntity, TCreateDto, TUpdateDto> service,
+        Func<TEntity?, TResponseDto> mapper
+    )
     {
         _service = service;
+        _mapper = mapper;
     }
 
     /// <summary>
@@ -31,7 +35,7 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     [HttpGet]
     public virtual async Task<IActionResult> GetAllAsync()
     {
-        return Ok(await _service.GetAllAsync());
+        return Ok((await _service.GetAllAsync()).Select(t => _mapper(t)));
     }
 
     /// <summary>
@@ -41,7 +45,7 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     [HttpGet("{id:guid}")]
     public virtual async Task<IActionResult> GetByIdAsync(Guid id)
     {
-        return Ok(await _service.FindByIdAsync(id));
+        return Ok(_mapper(await _service.FindByIdAsync(id)));
     }
 
     /// <summary>
@@ -51,7 +55,7 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     [HttpPost]
     public virtual async Task<IActionResult> CreateAsync([FromBody] TCreateDto createDto)
     {
-        return Ok(await _service.CreateAsync(createDto));
+        return Ok(_mapper(await _service.CreateAsync(createDto)));
     }
 
     /// <summary>
@@ -62,7 +66,7 @@ public class BaseController<TEntity, TCreateDto, TUpdateDto>
     [HttpPut("{id:guid}")]
     public virtual async Task<IActionResult> UpdateAsync(Guid id, [FromBody] TUpdateDto updateDto)
     {
-        return Ok(await _service.UpdateAsync(id, updateDto));
+        return Ok(_mapper(await _service.UpdateAsync(id, updateDto)));
     }
 
     /// <summary>
