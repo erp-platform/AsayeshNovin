@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\services",
+    "\\services\\UMS.Authentication",
+    "\\services\\UMS.Authentication\\UMS.Authentication.Domain",
+    "\\services\\UMS.Authentication\\UMS.Authentication.Domain\\Entities",
+    "\\services\\UMS.Authentication\\UMS.Authentication.Domain\\Enums"
+  ],
+  "SelectedNode": "\\services\\UMS.Authentication\\README.md",
+  "PreviewInSolutionExplorer": false
+}

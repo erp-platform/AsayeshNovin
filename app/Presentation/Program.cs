@@ -36,6 +36,11 @@ builder.Services.AddScoped<IBaseRepository<Channel>, BaseRepository<Channel>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 
+//Login
+builder.Services.AddScoped<IBaseRepository<Login>, BaseRepository<Login>>();
+builder.Services
+    .AddScoped<IBaseService<Login, LoginCreateDto, LoginUpdateDto>, LoginService>();
+
 //JWT
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("JWT"));
