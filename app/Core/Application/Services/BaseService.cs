@@ -1,8 +1,7 @@
-﻿using Infrastructure.Interfaces;
-using UMS.Authentication.Application.Interfaces;
-using UMS.Authentication.Domain.Entities;
+﻿using Core.Domain.Entities;
+using Core.Infrastructure.Repositories;
 
-namespace UMS.Authentication.Application.Services;
+namespace Core.Application.Services;
 
 public abstract class BaseService<TEntity, TCreateDto, TUpdateDto>
     : IBaseService<TEntity, TCreateDto, TUpdateDto>

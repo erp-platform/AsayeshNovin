@@ -1,4 +1,4 @@
-﻿namespace UMS.Authentication.Domain.Entities;
+﻿namespace Core.Domain.Entities;
 
 public abstract class BaseEntity
 {

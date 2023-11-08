@@ -1,19 +1,17 @@
-﻿using Infrastructure.Interfaces;
-using Infrastructure.Persistence;
-using UMS.Authentication.Domain.Entities;
+﻿using Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+namespace Core.Infrastructure.Repositories;
 
 public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
 {
-    private readonly AppDbContext _context;
+    private readonly DbContext _context;
 
-    public BaseRepository(AppDbContext context)
+    public BaseRepository(DbContext context)
     {
         _context = context;
     }
-    
+
     public virtual IQueryable<TEntity> GetDbSet()
     {
         return _context.Set<TEntity>();

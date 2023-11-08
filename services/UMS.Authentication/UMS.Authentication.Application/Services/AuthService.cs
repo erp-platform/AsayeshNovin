@@ -1,4 +1,5 @@
-using Infrastructure.Interfaces;
+using Core.Application.Services;
+using Core.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Interfaces;

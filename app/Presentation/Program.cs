@@ -1,7 +1,8 @@
 using System.Reflection;
-using Infrastructure.Interfaces;
+using Core.Application.Services;
+using Core.Infrastructure.Repositories;
 using Infrastructure.Persistence;
-using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using UMS.Authentication.Application.Authorization;
 using UMS.Authentication.Application.Dtos;
@@ -10,7 +11,7 @@ using UMS.Authentication.Application.Services;
 using UMS.Authentication.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContext<DbContext, AppDbContext>();
 
 //User
 builder.Services.AddScoped<IBaseRepository<User>, BaseRepository<User>>();

@@ -1,17 +1,13 @@
-﻿using UMS.Authentication.Application.Interfaces;
-using UMS.Authentication.Domain.Entities;
+﻿using Core.Application.Services;
+using Core.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Interfaces;
-using Presentation.Utility;
-using UMS.Authentication.Application.Authorization;
 
-namespace Presentation.Controllers;
+namespace Core.Presentation.Controllers;
 
 /// <summary>
 /// Basic CRUD Controller
 /// </summary>
-[Authorize]
-[ExceptionHandler]
 [ApiController]
 [Route("[controller]")]
 [Consumes("application/json")]

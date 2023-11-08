@@ -1,4 +1,5 @@
-﻿using Infrastructure.Seeders;
+﻿using Core.Domain.Entities;
+using Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;

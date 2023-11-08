@@ -1,6 +1,6 @@
-﻿using UMS.Authentication.Domain.Entities;
+﻿using Core.Domain.Entities;
 
-namespace UMS.Authentication.Application.Interfaces;
+namespace Core.Application.Services;
 
 public interface IBaseService<TEntity, in TCreateDto, in TUpdateDto>
     where TEntity : BaseEntity

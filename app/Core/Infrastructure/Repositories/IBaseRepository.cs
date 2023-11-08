@@ -1,6 +1,6 @@
-﻿using UMS.Authentication.Domain.Entities;
+﻿using Core.Domain.Entities;
 
-namespace Infrastructure.Interfaces;
+namespace Core.Infrastructure.Repositories;
 
 public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 {

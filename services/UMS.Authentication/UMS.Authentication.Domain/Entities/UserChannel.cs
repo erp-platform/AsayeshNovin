@@ -1,4 +1,6 @@
-﻿namespace UMS.Authentication.Domain.Entities;
+﻿using Core.Domain.Entities;
+
+namespace UMS.Authentication.Domain.Entities;
 
 public class UserChannel : BaseEntity
 {
