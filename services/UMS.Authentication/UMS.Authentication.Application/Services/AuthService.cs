@@ -7,7 +7,7 @@ using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Scrypt;
 using UMS.Authentication.Application.Authorization;
-using UMS.Authentication.Application.Dtos.Auth;
+using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
 using UMS.Authentication.Application.Dtos.UserDtos;

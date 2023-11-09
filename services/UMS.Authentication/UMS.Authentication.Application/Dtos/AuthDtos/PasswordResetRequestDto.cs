@@ -1,6 +1,6 @@
-namespace UMS.Authentication.Application.Dtos.Auth;
+namespace UMS.Authentication.Application.Dtos.AuthDtos;
 
-public class SignUpDto
+public class PasswordResetRequestDto
 {
     /// <example>2</example>
     public required int ChannelId { get; set; }

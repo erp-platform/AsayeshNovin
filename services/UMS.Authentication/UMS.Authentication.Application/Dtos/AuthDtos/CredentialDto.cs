@@ -1,4 +1,4 @@
-namespace UMS.Authentication.Application.Dtos.Auth;
+namespace UMS.Authentication.Application.Dtos.AuthDtos;
 
 public class CredentialDto
 {

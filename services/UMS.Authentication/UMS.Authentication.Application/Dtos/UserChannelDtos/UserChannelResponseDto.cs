@@ -1,7 +1,5 @@
-using UMS.Authentication.Application.Dtos.Auth;
+using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
-using UMS.Authentication.Application.Dtos.UserDtos;
-using UMS.Authentication.Domain.Enums;
 
 namespace UMS.Authentication.Application.Dtos.UserChannelDtos;
 

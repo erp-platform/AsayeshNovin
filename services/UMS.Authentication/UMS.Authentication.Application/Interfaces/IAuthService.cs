@@ -1,9 +1,6 @@
-using UMS.Authentication.Application.Dtos;
-using UMS.Authentication.Application.Dtos.Auth;
+using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
 using UMS.Authentication.Application.Dtos.UserDtos;
-using UMS.Authentication.Domain.Entities;
-
 namespace UMS.Authentication.Application.Interfaces;
 
 public interface IAuthService
