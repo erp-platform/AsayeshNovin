@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\app\Core\Core.csproj" />
+      <ProjectReference Include="..\..\UMS.Authentication\UMS.Authentication.Domain\UMS.Authentication.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -3,6 +3,7 @@ using Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;
+using UMS.Profile.Domain.Entities;
 
 namespace Infrastructure.Persistence;
 
@@ -29,12 +30,19 @@ public class AppDbContext : DbContext
         optionsBuilder.UseLazyLoadingProxies();
     }
 
+    // UMS.Authentication
     public DbSet<User>? Users { get; set; }
     public DbSet<UserChannel>? UserChannels { get; set; }
     public DbSet<Verification>? Verifications { get; set; }
     public DbSet<Login>? Logins { get; set; }
     public DbSet<PasswordReset>? PasswordResets { get; set; }
     public DbSet<Channel>? Channels { get; set; }
+
+    // UMS.Profile
+    public DbSet<Profile>? Profiles { get; set; }
+    public DbSet<Address>? Addresses { get; set; }
+    public DbSet<Country>? Countries { get; set; }
+    public DbSet<Province>? Provinces { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {
