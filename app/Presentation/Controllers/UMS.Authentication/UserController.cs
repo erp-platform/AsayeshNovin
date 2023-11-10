@@ -18,11 +18,12 @@ public class UserController : BaseController<User, UserCreateDto, UserUpdateDto,
         VerificationId = user?.VerificationId,
         Channels = user?.Channels.Select(c => new UserChannelResponseDto
         {
+            Id = c.Id,
             Value = c.Value,
             IsDefault = c.IsDefault,
-            UserId = c?.User?.Id,
+            UserId = c.User?.Id,
             Channel = c.Channel.AId,
-            VerificationId = c?.Verification?.Id,
+            VerificationId = c.Verification?.Id,
             PasswordResets = null,
             Logins = null
         })
