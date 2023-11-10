@@ -277,11 +277,18 @@ public class AuthService : IAuthService
             throw new Exception($"Failed to find Verification record for UserChannel with id: \"{oldUserChannel.Id}\"");
         }
 
+        CheckIsVerified(verification);
         CheckVerificationInterval(verification, oldUserChannel);
         return await UpdateUserChannelRecord(
             oldUserChannel,
             await UpdateVerificationRecord(verification, Helpers.GenerateVerificationCode())
         );
+    }
+
+    private static void CheckIsVerified(Verification verification)
+    {
+        if (verification.IsVerified)
+            throw new Exception($"Verification with id: {verification.Id} is already verified!");
     }
 
     private async Task<UserChannel> UpdateUserChannelRecord(UserChannel userChannel, Verification verification)
