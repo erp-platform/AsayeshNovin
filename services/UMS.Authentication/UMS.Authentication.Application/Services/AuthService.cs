@@ -62,6 +62,7 @@ public class AuthService : IAuthService
         await SendVerificationCodeToChannel(userChannel);
         return new UserChannelResponseDto
         {
+            Id = userChannel.Id,
             Value = userChannel.Value,
             IsDefault = userChannel.IsDefault,
             UserId = userChannel.User?.Id,
@@ -88,6 +89,7 @@ public class AuthService : IAuthService
             await VerifyUserChannel(userChannel);
             return new UserChannelResponseDto
             {
+                Id = userChannel.Id,
                 Value = userChannel.Value,
                 IsDefault = userChannel.IsDefault,
                 UserId = userChannel.User?.Id,
@@ -155,6 +157,7 @@ public class AuthService : IAuthService
                 VerificationId = user.VerificationId,
                 Channels = user.Channels.Select(a => new UserChannelResponseDto
                 {
+                    Id = a.Id,
                     Channel = a.Channel.AId,
                     IsDefault = a.IsDefault,
                     Value = a.Value,
@@ -274,7 +277,7 @@ public class AuthService : IAuthService
             throw new Exception($"Failed to find Verification record for UserChannel with id: \"{oldUserChannel.Id}\"");
         }
 
-        CheckVerificationInterval(verification);
+        CheckVerificationInterval(verification, oldUserChannel);
         return await UpdateUserChannelRecord(
             oldUserChannel,
             await UpdateVerificationRecord(verification, Helpers.GenerateVerificationCode())
@@ -311,10 +314,13 @@ public class AuthService : IAuthService
         }) ?? throw new Exception("Failed to update Verification database record.");
     }
 
-    private static void CheckVerificationInterval(Verification verification)
+    private static void CheckVerificationInterval(Verification verification, UserChannel oldUserChannel)
     {
         if (IsVerificationValid(verification))
-            throw new Exception($"Verification with id: {verification.Id} is not expired yet!");
+        {
+            throw new Exception(
+                $"Verification with id: {verification.Id} for UserChannel with id: {oldUserChannel.Id} is not expired yet!");
+        }
     }
 
     private static bool IsVerificationValid(Verification verification)
