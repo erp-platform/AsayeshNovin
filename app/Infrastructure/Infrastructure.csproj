@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\services\UMS.Authentication\UMS.Authentication.Domain\UMS.Authentication.Domain.csproj" />
+        <ProjectReference Include="..\..\services\UMS.Profile\UMS.Profile.Domain\UMS.Profile.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

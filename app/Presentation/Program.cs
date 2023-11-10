@@ -5,7 +5,6 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using UMS.Authentication.Application.Authorization;
-using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Dtos.LoginDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
