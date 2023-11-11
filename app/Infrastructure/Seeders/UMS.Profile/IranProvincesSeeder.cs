@@ -1,4 +1,3 @@
-using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using UMS.Profile.Domain.Entities;
 
@@ -53,7 +52,7 @@ public class IranProvincesSeeder : BaseSeeder
 
     private Province CreateIranProvince(string key, string name)
     {
-        return new Province()
+        return new Province
         {
             Id = Guid.NewGuid(),
             Country = _iran,

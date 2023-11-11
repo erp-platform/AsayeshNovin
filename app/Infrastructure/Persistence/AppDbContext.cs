@@ -74,11 +74,10 @@ public class AppDbContext : DbContext
 
         // UMS.Profile
         // Countries
-        new CountrySeeder(modelBuilder).Seed();
+        var countrySeeder = new CountrySeeder(modelBuilder);
+        countrySeeder.Seed();
         // Provinces
-        var iran = Countries?.FirstOrDefault(c => c != null && c.Key == "IR", null);
-        if (iran != null)
-            new IranProvincesSeeder(modelBuilder, iran).Seed();
+        new IranProvincesSeeder(modelBuilder, countrySeeder.getIran()).Seed();
 
         base.OnModelCreating(modelBuilder);
     }

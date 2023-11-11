@@ -5,8 +5,11 @@ namespace Infrastructure.Seeders.UMS.Profile;
 
 public class CountrySeeder : BaseSeeder
 {
+    private Country _iran;
+
     public CountrySeeder(ModelBuilder modelBuilder, int count = 1) : base(modelBuilder, count)
     {
+        _iran = CreateCountry("IR", "Iran");
     }
 
     public override void Seed()
@@ -120,7 +123,7 @@ public class CountrySeeder : BaseSeeder
             CreateCountry("IN", "India"),
             CreateCountry("IO", "BritishIndianOceanTerritory"),
             CreateCountry("IQ", "Iraq"),
-            CreateCountry("IR", "Iran"),
+            _iran,
             CreateCountry("IS", "Iceland"),
             CreateCountry("IT", "Italy"),
             CreateCountry("JE", "Jersey"),
@@ -276,4 +279,6 @@ public class CountrySeeder : BaseSeeder
             UpdatedAt = DateTime.UtcNow
         };
     }
+
+    public Country getIran() => _iran;
 }
