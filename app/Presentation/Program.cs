@@ -1,16 +1,21 @@
 using System.Reflection;
-using Infrastructure.Interfaces;
+using Core.Application.Services;
+using Core.Infrastructure.Repositories;
 using Infrastructure.Persistence;
-using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using UMS.Authentication.Application.Authorization;
-using UMS.Authentication.Application.Dtos;
+using UMS.Authentication.Application.Dtos.LoginDtos;
+using UMS.Authentication.Application.Dtos.PasswordResetDtos;
+using UMS.Authentication.Application.Dtos.UserChannelDtos;
+using UMS.Authentication.Application.Dtos.UserDtos;
+using UMS.Authentication.Application.Dtos.VerificationDtos;
 using UMS.Authentication.Application.Interfaces;
 using UMS.Authentication.Application.Services;
 using UMS.Authentication.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContext<DbContext, AppDbContext>();
 
 //User
 builder.Services.AddScoped<IBaseRepository<User>, BaseRepository<User>>();
@@ -35,6 +40,11 @@ builder.Services
 builder.Services.AddScoped<IBaseRepository<Channel>, BaseRepository<Channel>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
+
+//Login
+builder.Services.AddScoped<IBaseRepository<Login>, BaseRepository<Login>>();
+builder.Services
+    .AddScoped<IBaseService<Login, LoginCreateDto, LoginUpdateDto>, LoginService>();
 
 //JWT
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();

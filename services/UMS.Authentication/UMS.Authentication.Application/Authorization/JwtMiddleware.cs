@@ -1,6 +1,7 @@
+using Core.Application.Services;
 using Microsoft.AspNetCore.Http;
 using UMS.Authentication.Application.Dtos;
-using UMS.Authentication.Application.Interfaces;
+using UMS.Authentication.Application.Dtos.UserDtos;
 using UMS.Authentication.Domain.Entities;
 
 namespace UMS.Authentication.Application.Authorization;

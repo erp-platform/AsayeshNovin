@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Utility;
-using UMS.Authentication.Application.Dtos;
+using UMS.Authentication.Application.Dtos.AuthDtos;
+using UMS.Authentication.Application.Dtos.UserChannelDtos;
+using UMS.Authentication.Application.Dtos.UserDtos;
 using UMS.Authentication.Application.Interfaces;
 
 namespace Presentation.Controllers.UMS.Authentication;
@@ -23,38 +25,28 @@ public class AuthenticationController : ControllerBase
     /// <summary>
     /// Sign up with various Channels (Call/SMS/Email)
     /// </summary>
-    [AllowAnonymous]
+    [ProducesResponseType(typeof(UserChannelResponseDto), 200)]
     [HttpPost("SignUp")]
     public async Task<IActionResult> SignUp(SignUpDto signUpDto)
     {
-        var userChannel = await _authService.SignUp(signUpDto);
-        return Ok(new
-        {
-            userChannel.Channel.Name,
-            userChannel.Value,
-            userChannel.Id
-        });
+        return Ok(await _authService.SignUp(signUpDto));
     }
 
     /// <summary>
     /// Verify User Channel
     /// </summary>
     [HttpPost("Verify")]
+    [ProducesResponseType(typeof(UserChannelResponseDto), 200)]
     public async Task<IActionResult> Verify(VerifyDto verifyDto)
     {
-        var userChannel = await _authService.Verify(verifyDto);
-        return Ok(new
-        {
-            userChannel.Channel.Name,
-            userChannel.Value,
-            userChannel.User?.Username
-        });
+        return Ok(await _authService.Verify(verifyDto));
     }
 
     /// <summary>
     /// Sets Credential for the provided UserChannel
     /// </summary>
     [HttpPost("SetCredentials")]
+    [ProducesResponseType(typeof(UserResponseDto), 200)]
     public async Task<IActionResult> SetCredential(CredentialDto credentialDto)
     {
         var user = await _authService.SetCredential(credentialDto);
@@ -69,9 +61,10 @@ public class AuthenticationController : ControllerBase
     /// Login with Username and Password
     /// </summary>
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginDto loginDto)
+    [ProducesResponseType(typeof(AuthLoginResponseDto), 200)]
+    public async Task<IActionResult> Login(AuthLoginDto authLoginDto)
     {
-        var response = await _authService.Login(loginDto);
+        var response = await _authService.Login(authLoginDto);
         return Ok(new
         {
             response.User.Username,
@@ -84,6 +77,7 @@ public class AuthenticationController : ControllerBase
     /// Password Reset Request
     /// </summary>
     [HttpPost("PasswordReset")]
+    [ProducesResponseType(typeof(PasswordResetRequestDto), 200)]
     public async Task<IActionResult> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto)
     {
         return Ok(await _authService.PasswordResetRequest(passwordResetRequestDto));
@@ -95,6 +89,7 @@ public class AuthenticationController : ControllerBase
     /// <param name="token">Token that is sent to user using provided channel in the Password Reset Request</param>
     /// <param name="passwordResetAction"></param>
     [HttpPost("PasswordReset/{token}")]
+    [ProducesResponseType(typeof(UserResponseDto), 200)]
     public async Task<IActionResult> PasswordResetAction(string token, PasswordResetAction passwordResetAction)
     {
         var user = await _authService.PasswordResetAction(token, passwordResetAction);

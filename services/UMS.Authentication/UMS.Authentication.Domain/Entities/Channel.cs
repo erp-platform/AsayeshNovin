@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Core.Domain.Entities;
 
 namespace UMS.Authentication.Domain.Entities;
 

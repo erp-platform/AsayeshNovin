@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace UMS.Authentication.Domain.Entities;
 

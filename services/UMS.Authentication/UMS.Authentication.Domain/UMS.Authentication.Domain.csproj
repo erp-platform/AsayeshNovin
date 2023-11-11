@@ -10,6 +10,10 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.13"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\app\Core\Core.csproj" />
+    </ItemGroup>
+
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
