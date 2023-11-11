@@ -77,7 +77,9 @@ public class AppDbContext : DbContext
         var countrySeeder = new CountrySeeder(modelBuilder);
         countrySeeder.Seed();
         // Provinces
-        new IranProvincesSeeder(modelBuilder, countrySeeder.getIran()).Seed();
+        var country = countrySeeder.Countries.Find(c => c.Key == "IR");
+        if (country != null)
+            new IranProvincesSeeder(modelBuilder, country).Seed();
 
         base.OnModelCreating(modelBuilder);
     }

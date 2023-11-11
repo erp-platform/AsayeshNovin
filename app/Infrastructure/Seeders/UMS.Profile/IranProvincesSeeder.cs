@@ -55,7 +55,7 @@ public class IranProvincesSeeder : BaseSeeder
         return new Province
         {
             Id = Guid.NewGuid(),
-            Country = _iran,
+            CountryId = _iran.Id,
             Key = key,
             Name = name,
             CreatedAt = DateTime.UtcNow,
