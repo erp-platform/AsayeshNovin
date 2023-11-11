@@ -1,5 +1,7 @@
 ﻿using Core.Domain.Entities;
 using Infrastructure.Seeders;
+using Infrastructure.Seeders.UMS.Authentication;
+using Infrastructure.Seeders.UMS.Profile;
 using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;
@@ -70,6 +72,9 @@ public class AppDbContext : DbContext
     {
         // UMS.Authentication
         new ChannelSeeder(modelBuilder).Seed();
+
+        // UMS.Profile
+        new CountrySeeder(modelBuilder).Seed();
 
         base.OnModelCreating(modelBuilder);
     }
