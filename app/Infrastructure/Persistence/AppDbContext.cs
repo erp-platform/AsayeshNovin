@@ -1,5 +1,4 @@
 ﻿using Core.Domain.Entities;
-using Infrastructure.Seeders;
 using Infrastructure.Seeders.UMS.Authentication;
 using Infrastructure.Seeders.UMS.Profile;
 using Microsoft.EntityFrameworkCore;
@@ -74,7 +73,12 @@ public class AppDbContext : DbContext
         new ChannelSeeder(modelBuilder).Seed();
 
         // UMS.Profile
+        // Countries
         new CountrySeeder(modelBuilder).Seed();
+        // Provinces
+        var iran = Countries?.FirstOrDefault(c => c != null && c.Key == "IR", null);
+        if (iran != null)
+            new IranProvincesSeeder(modelBuilder, iran).Seed();
 
         base.OnModelCreating(modelBuilder);
     }
