@@ -15,8 +15,7 @@ public class IranProvincesSeeder : BaseSeeder
 
     public override void Seed()
     {
-        ModelBuilder.Entity<Province>().HasData(new List<Province>
-        {
+        ModelBuilder.Entity<Province>().HasData(
             CreateIranProvince("EA", "East Azarbayejan"),
             CreateIranProvince("WA", "West Azarbayejan"),
             CreateIranProvince("AR", "Ardabil"),
@@ -46,13 +45,13 @@ public class IranProvincesSeeder : BaseSeeder
             CreateIranProvince("MA", "Markazi"),
             CreateIranProvince("HO", "Hormozgan"),
             CreateIranProvince("HA", "Hamadan"),
-            CreateIranProvince("YA", "Yazd"),
-        });
+            CreateIranProvince("YA", "Yazd")
+        );
     }
 
-    private Province CreateIranProvince(string key, string name)
+    private object CreateIranProvince(string key, string name)
     {
-        return new Province
+        return new
         {
             Id = Guid.NewGuid(),
             CountryId = _iran.Id,
