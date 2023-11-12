@@ -5,10 +5,7 @@ ERP platform.
 
 ## Deployment
 
-The program is deployed with the CI/CD service Liara. To create a new migration and update the database, use the .bat
-files located in app/Infrastructure path. First, execute the db-dev.bat file. This file runs Entity Framework Core
-commands locally. The migration name should change with each execution of this file. To update the database on the
-server, run the db-prod.bat file.
+The program is deployed with the CI/CD service Liara.
 
 ### DB Migrations
 
