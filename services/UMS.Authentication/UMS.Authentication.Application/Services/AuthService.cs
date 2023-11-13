@@ -84,7 +84,7 @@ public class AuthService : IAuthService
         if (verification == null)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelWithoutVerification,
+                error: AuthServiceError.UserChannelWithoutVerification,
                 httpCode: StatusCodes.Status404NotFound,
                 data: verifyDto
             );
@@ -93,7 +93,7 @@ public class AuthService : IAuthService
         if (userChannel == null)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelNotFound,
+                error: AuthServiceError.UserChannelNotFound,
                 httpCode: StatusCodes.Status404NotFound,
                 data: verifyDto
             );
@@ -132,7 +132,7 @@ public class AuthService : IAuthService
         if (userChannel == null)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelNotFound,
+                error: AuthServiceError.UserChannelNotFound,
                 httpCode: StatusCodes.Status404NotFound,
                 data: credentialDto
             );
@@ -150,22 +150,18 @@ public class AuthService : IAuthService
         if (verification == null)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelWithoutVerification,
+                error: AuthServiceError.UserChannelWithoutVerification,
                 httpCode: StatusCodes.Status404NotFound,
-                data: new { credentialDto.UserChannelId }
+                data: credentialDto
             );
         }
 
         if (!verification.IsVerified)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelNotVerified,
+                error: AuthServiceError.UserChannelNotVerified,
                 httpCode: StatusCodes.Status401Unauthorized,
-                data: new
-                {
-                    VerificationId = verification.Id,
-                    UserChannelId = userChannel.Id
-                }
+                data: credentialDto
             );
         }
 
@@ -181,11 +177,7 @@ public class AuthService : IAuthService
             throw Helpers.CreateAuthException(
                 error: AuthServiceError.DatabaseError,
                 httpCode: StatusCodes.Status500InternalServerError,
-                data: new
-                {
-                    VerificationId = verification.Id,
-                    UserChannelId = userChannel.Id
-                }
+                data: credentialDto
             );
         }
 
@@ -224,7 +216,7 @@ public class AuthService : IAuthService
                 httpCode: StatusCodes.Status401Unauthorized
             );
         }
-        
+
         return new ResponseDto<AuthLoginResponseDto>
         {
             Data = new AuthLoginResponseDto
@@ -341,9 +333,9 @@ public class AuthService : IAuthService
         if (verification == null)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelWithoutVerification,
+                error: AuthServiceError.UserChannelWithoutVerification,
                 httpCode: StatusCodes.Status404NotFound,
-                data: new { UserChannelId = userChannel.Id }
+                data: null
             );
         }
 
@@ -357,7 +349,7 @@ public class AuthService : IAuthService
 
         throw Helpers.CreateAuthException(
             AuthServiceError.VerificationCodeExpired,
-            data: new { VerificationId = verification.Id }
+            data: null
         );
     }
 
@@ -400,9 +392,9 @@ public class AuthService : IAuthService
         if (verification == null)
         {
             throw Helpers.CreateAuthException(
-                error: AuthServiceError.UserchannelWithoutVerification,
+                error: AuthServiceError.UserChannelWithoutVerification,
                 httpCode: StatusCodes.Status404NotFound,
-                data: new { UserChannelId = oldUserChannel.Id }
+                data: null
             );
         }
 
@@ -420,7 +412,7 @@ public class AuthService : IAuthService
         {
             throw Helpers.CreateAuthException(
                 AuthServiceError.VerificationAlreadyVerified,
-                new { verification.Code }
+                data: null
             );
         }
     }

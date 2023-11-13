@@ -63,7 +63,7 @@ public class TestController : ControllerBase
         const string text = "Error number: {number}";
         throw number switch
         {
-            1 => new AppException { ErrorCode = number },
+            1 => new AppException { ErrorText = number.ToString() },
             2 => new ArgumentException(text),
             3 => new ArithmeticException(text),
             4 => new ApplicationException(text),

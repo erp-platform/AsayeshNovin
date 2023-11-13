@@ -14,7 +14,6 @@ public static class Helpers
     {
         return new AppException
         {
-            ErrorCode = (int)(object)error,
             ErrorText = error.ToString(),
             HttpCode = httpCode,
             ResponseData = data
