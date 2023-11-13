@@ -1,3 +1,4 @@
+using Core.Presentation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using UMS.Authentication.Application.Dtos;
@@ -13,9 +14,9 @@ public class ExceptionHandler : Attribute, IExceptionFilter
         {
             var exception = (AppException)context.Exception;
 
-            context.Result = new JsonResult(new ResponseDto<string>
+            context.Result = new JsonResult(new ResponseDto<object>
             {
-                Data = null,
+                Data = exception.ResponseData,
                 Error = new ErrorDto
                 {
                     ErrorCode = exception.ErrorCode,
@@ -24,7 +25,7 @@ public class ExceptionHandler : Attribute, IExceptionFilter
                     ExceptionMessage = context.Exception.Message.Trim(),
                     InnerExceptionMessage = context.Exception.InnerException?.Message
                 }
-            }) { StatusCode = StatusCodes.Status400BadRequest };
+            }) { StatusCode = exception.HttpCode };
         }
         else
         {
