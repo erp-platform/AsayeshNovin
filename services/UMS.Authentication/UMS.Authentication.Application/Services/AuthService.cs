@@ -7,6 +7,7 @@ using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Scrypt;
 using UMS.Authentication.Application.Authorization;
+using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
@@ -51,7 +52,7 @@ public class AuthService : IAuthService
         _channelRepository = channelRepository;
     }
 
-    public async Task<UserChannelResponseDto> SignUp(SignUpDto signUpDto)
+    public async Task<ResponseDto<UserChannelResponseDto>> SignUp(SignUpDto signUpDto)
     {
         var oldUserChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
             userChannel?.Channel.AId == signUpDto.ChannelId &&
@@ -60,20 +61,23 @@ public class AuthService : IAuthService
             ? HandleNewRegister(signUpDto)
             : HandleOldRegister(oldUserChannel));
         await SendVerificationCodeToChannel(userChannel);
-        return new UserChannelResponseDto
+        return new ResponseDto<UserChannelResponseDto>
         {
-            Id = userChannel.Id,
-            Value = userChannel.Value,
-            IsDefault = userChannel.IsDefault,
-            UserId = userChannel.User?.Id,
-            Channel = userChannel.Channel.AId,
-            VerificationId = userChannel.Verification?.Id,
-            PasswordResets = null,
-            Logins = null
+            Data = new UserChannelResponseDto
+            {
+                Id = userChannel.Id,
+                Value = userChannel.Value,
+                IsDefault = userChannel.IsDefault,
+                UserId = userChannel.User?.Id,
+                Channel = userChannel.Channel.AId,
+                VerificationId = userChannel.Verification?.Id,
+                PasswordResets = null,
+                Logins = null
+            }
         };
     }
 
-    public async Task<UserChannelResponseDto> Verify(VerifyDto verifyDto)
+    public async Task<ResponseDto<UserChannelResponseDto>> Verify(VerifyDto verifyDto)
     {
         var userChannel = await _userChannelService.FindByIdAsync(verifyDto.UserChannelId);
         var verification = userChannel?.Verification;
@@ -87,16 +91,19 @@ public class AuthService : IAuthService
                 throw new Exception($"Verification with id: \"{verification.Id}\" is already verified.");
 
             await VerifyUserChannel(userChannel);
-            return new UserChannelResponseDto
+            return new ResponseDto<UserChannelResponseDto>
             {
-                Id = userChannel.Id,
-                Value = userChannel.Value,
-                IsDefault = userChannel.IsDefault,
-                UserId = userChannel.User?.Id,
-                Channel = userChannel.Channel.AId,
-                VerificationId = userChannel.Verification?.Id,
-                PasswordResets = null,
-                Logins = null
+                Data = new UserChannelResponseDto
+                {
+                    Id = userChannel.Id,
+                    Value = userChannel.Value,
+                    IsDefault = userChannel.IsDefault,
+                    UserId = userChannel.User?.Id,
+                    Channel = userChannel.Channel.AId,
+                    VerificationId = userChannel.Verification?.Id,
+                    PasswordResets = null,
+                    Logins = null
+                }
             };
         }
 
@@ -104,7 +111,7 @@ public class AuthService : IAuthService
             $"Code: {verifyDto.Code} is an incorrect code for UserChannel with id: \"{verifyDto.UserChannelId}\"");
     }
 
-    public async Task<UserResponseDto> SetCredential(CredentialDto credentialDto)
+    public async Task<ResponseDto<UserResponseDto>> SetCredential(CredentialDto credentialDto)
     {
         var userChannel = await _userChannelService.FindByIdAsync(credentialDto.UserChannelId);
         if (userChannel == null)
@@ -130,11 +137,14 @@ public class AuthService : IAuthService
         });
         if (user != null)
         {
-            return new UserResponseDto
+            return new ResponseDto<UserResponseDto>
             {
-                Username = user.Username,
-                VerificationId = user.VerificationId,
-                Channels = null
+                Data = new UserResponseDto
+                {
+                    Username = user.Username,
+                    VerificationId = user.VerificationId,
+                    Channels = null
+                }
             };
         }
 
@@ -142,33 +152,37 @@ public class AuthService : IAuthService
             $"Failed to create User for UserChannel with id: \"{userChannel.Id}\" and Verification with id: \"{verification.Id}\"");
     }
 
-    public async Task<AuthLoginResponseDto> Login(AuthLoginDto authLoginDto)
+    public async Task<ResponseDto<AuthLoginResponseDto>> Login(AuthLoginDto authLoginDto)
     {
         var user = (await _userService.GetAllAsync()).FirstOrDefault(u =>
             u?.Username == authLoginDto.Username &&
             _encoder.Compare(authLoginDto.Password, u.Password), null);
         if (user == null)
             throw new Exception("Username or password is incorrect.");
-        return new AuthLoginResponseDto
+        return new ResponseDto<AuthLoginResponseDto>
         {
-            User = new UserResponseDto
+            Data = new AuthLoginResponseDto
             {
-                Username = user.Username,
-                VerificationId = user.VerificationId,
-                Channels = user.Channels.Select(a => new UserChannelResponseDto
+                User = new UserResponseDto
                 {
-                    Id = a.Id,
-                    Channel = a.Channel.AId,
-                    IsDefault = a.IsDefault,
-                    Value = a.Value,
-                    VerificationId = a.Verification?.Id
-                })
-            },
-            Token = _jwtUtils.GenerateJwtToken(user)
+                    Username = user.Username,
+                    VerificationId = user.VerificationId,
+                    Channels = user.Channels.Select(a => new UserChannelResponseDto
+                    {
+                        Id = a.Id,
+                        Channel = a.Channel.AId,
+                        IsDefault = a.IsDefault,
+                        Value = a.Value,
+                        VerificationId = a.Verification?.Id
+                    })
+                },
+                Token = _jwtUtils.GenerateJwtToken(user)
+            }
         };
     }
 
-    public async Task<PasswordResetRequestDto> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto)
+    public async Task<ResponseDto<PasswordResetRequestDto>> PasswordResetRequest(
+        PasswordResetRequestDto passwordResetRequestDto)
     {
         var result = Task.FromResult(passwordResetRequestDto);
 
@@ -177,7 +191,13 @@ public class AuthService : IAuthService
             .Where(uc => uc.Value == passwordResetRequestDto.Value)
             .ToListAsync()).FirstOrDefault();
         if (userChannel == null)
-            return await result;
+        {
+            return new ResponseDto<PasswordResetRequestDto>
+            {
+                Data = await result
+            };
+        }
+
         var token = Helpers.GeneratePasswordResetToken();
         await _passwordResetService.CreateAsync(new PasswordResetCreateDto
         {
@@ -188,10 +208,14 @@ public class AuthService : IAuthService
         //todo refactor
         await SendResetPasswordTokenToChannel(userChannel,
             $"http://asnp.ir/Authentication/PasswordReset/{token}");
-        return await result;
+        return new ResponseDto<PasswordResetRequestDto>
+        {
+            Data = await result
+        };
     }
 
-    public async Task<UserResponseDto> PasswordResetAction(string token, PasswordResetAction passwordResetAction)
+    public async Task<ResponseDto<UserResponseDto>> PasswordResetAction(string token,
+        PasswordResetAction passwordResetAction)
     {
         var passwordReset = (await _passwordResetService.GetAllAsync())
             .FirstOrDefault(pr => pr?.Token == token && !pr.IsUsed, null);
@@ -214,11 +238,14 @@ public class AuthService : IAuthService
         });
         if (user == null)
             throw new Exception("Failed to changed user password");
-        return new UserResponseDto
+        return new ResponseDto<UserResponseDto>
         {
-            Username = user.Username,
-            VerificationId = user.VerificationId,
-            Channels = null
+            Data = new UserResponseDto
+            {
+                Username = user.Username,
+                VerificationId = user.VerificationId,
+                Channels = null
+            }
         };
     }
 

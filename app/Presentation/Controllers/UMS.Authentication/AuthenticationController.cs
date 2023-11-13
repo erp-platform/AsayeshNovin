@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Utility;
+using Presentation.Errors;
+using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
 using UMS.Authentication.Application.Dtos.UserDtos;
@@ -24,7 +25,7 @@ public class AuthenticationController : ControllerBase
     /// <summary>
     /// Sign up with various Channels (Call/SMS/Email)
     /// </summary>
-    [ProducesResponseType(typeof(UserChannelResponseDto), 200)]
+    [ProducesResponseType(typeof(ResponseDto<UserChannelResponseDto>), 200)]
     [HttpPost("SignUp")]
     public async Task<IActionResult> SignUp(SignUpDto signUpDto)
     {
@@ -35,7 +36,7 @@ public class AuthenticationController : ControllerBase
     /// Verify User Channel
     /// </summary>
     [HttpPost("Verify")]
-    [ProducesResponseType(typeof(UserChannelResponseDto), 200)]
+    [ProducesResponseType(typeof(ResponseDto<UserChannelResponseDto>), 200)]
     public async Task<IActionResult> Verify(VerifyDto verifyDto)
     {
         return Ok(await _authService.Verify(verifyDto));
@@ -45,14 +46,14 @@ public class AuthenticationController : ControllerBase
     /// Sets Credential for the provided UserChannel
     /// </summary>
     [HttpPost("SetCredentials")]
-    [ProducesResponseType(typeof(UserResponseDto), 200)]
+    [ProducesResponseType(typeof(ResponseDto<UserResponseDto>), 200)]
     public async Task<IActionResult> SetCredential(CredentialDto credentialDto)
     {
-        var user = await _authService.SetCredential(credentialDto);
+        var user = (await _authService.SetCredential(credentialDto)).Data;
         return Ok(new
         {
-            user.Username,
-            user.VerificationId
+            user?.Username,
+            user?.VerificationId
         });
     }
 
@@ -60,15 +61,15 @@ public class AuthenticationController : ControllerBase
     /// Login with Username and Password
     /// </summary>
     [HttpPost("Login")]
-    [ProducesResponseType(typeof(AuthLoginResponseDto), 200)]
+    [ProducesResponseType(typeof(ResponseDto<AuthLoginResponseDto>), 200)]
     public async Task<IActionResult> Login(AuthLoginDto authLoginDto)
     {
-        var response = await _authService.Login(authLoginDto);
+        var response = (await _authService.Login(authLoginDto)).Data;
         return Ok(new
         {
-            response.User.Username,
-            response.User.VerificationId,
-            response.Token
+            response?.User.Username,
+            response?.User.VerificationId,
+            response?.Token
         });
     }
 
@@ -76,7 +77,7 @@ public class AuthenticationController : ControllerBase
     /// Password Reset Request
     /// </summary>
     [HttpPost("PasswordReset")]
-    [ProducesResponseType(typeof(PasswordResetRequestDto), 200)]
+    [ProducesResponseType(typeof(ResponseDto<PasswordResetRequestDto>), 200)]
     public async Task<IActionResult> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto)
     {
         return Ok(await _authService.PasswordResetRequest(passwordResetRequestDto));
@@ -88,14 +89,14 @@ public class AuthenticationController : ControllerBase
     /// <param name="token">Token that is sent to user using provided channel in the Password Reset Request</param>
     /// <param name="passwordResetAction"></param>
     [HttpPost("PasswordReset/{token}")]
-    [ProducesResponseType(typeof(UserResponseDto), 200)]
+    [ProducesResponseType(typeof(ResponseDto<UserResponseDto>), 200)]
     public async Task<IActionResult> PasswordResetAction(string token, PasswordResetAction passwordResetAction)
     {
-        var user = await _authService.PasswordResetAction(token, passwordResetAction);
+        var user = (await _authService.PasswordResetAction(token, passwordResetAction)).Data;
         return Ok(new
         {
-            user.Username,
-            user.VerificationId
+            user?.Username,
+            user?.VerificationId
         });
     }
 }

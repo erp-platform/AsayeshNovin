@@ -1,6 +1,6 @@
 ﻿using Core.Application.Services;
 using Core.Presentation.Controllers;
-using Presentation.Utility;
+using Presentation.Errors;
 using UMS.Authentication.Application.Authorization;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
 using UMS.Authentication.Application.Dtos.UserDtos;
