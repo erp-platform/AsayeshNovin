@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UMS.Profile.Application.Dtos.ProfileDtos;
+﻿namespace UMS.Profile.Application.Dtos.ProfileDtos;
 
 public class ProfileCreateDto
 {
