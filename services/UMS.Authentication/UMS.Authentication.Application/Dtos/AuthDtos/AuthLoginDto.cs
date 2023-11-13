@@ -5,6 +5,6 @@ public class AuthLoginDto
     /// <example>ObiWanKenobi</example>
     public required string Username { get; set; }
 
-    /// <example>The Negotiator</example>
+    /// <example>TheNegotiator</example>
     public required string Password { get; set; }
 }

@@ -1,4 +1,4 @@
-using UMS.Authentication.Application.Dtos.AuthDtos;
+using UMS.Authentication.Application.Dtos.LoginDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
 
 namespace UMS.Authentication.Application.Dtos.UserChannelDtos;
@@ -15,5 +15,5 @@ public class UserChannelResponseDto
     public virtual IEnumerable<PasswordResetResponseDto>? PasswordResets { get; set; } =
         new List<PasswordResetResponseDto>();
 
-    public virtual IEnumerable<AuthLoginResponseDto>? Logins { get; set; } = new List<AuthLoginResponseDto>();
+    public virtual IEnumerable<LoginResponseDto>? Logins { get; set; } = new List<LoginResponseDto>();
 }

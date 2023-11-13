@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Utility;
 using UMS.Authentication.Application.Dtos.AuthDtos;
