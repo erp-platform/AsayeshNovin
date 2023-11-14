@@ -54,12 +54,12 @@ public class AuthService : IAuthService
 
     public async Task<ResponseDto<UserChannelResponseDto>> SignUp(SignUpDto signUpDto)
     {
-        var oldUserChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
+        var previousUserChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
             userChannel?.Channel.AId == signUpDto.ChannelId &&
             userChannel.Value == signUpDto.Value, null);
-        var userChannel = await (oldUserChannel == null
+        var userChannel = await (previousUserChannel == null
             ? HandleNewRegister(signUpDto)
-            : HandleOldRegister(oldUserChannel));
+            : HandlePreviousRegister(previousUserChannel));
         await SendVerificationCodeToChannel(userChannel);
         return new ResponseDto<UserChannelResponseDto>
         {
@@ -420,10 +420,10 @@ public class AuthService : IAuthService
         return await UpdateUserChannelRecord(userChannel, await CreateVerificationRecord());
     }
 
-    private async Task<UserChannel> HandleOldRegister(UserChannel oldUserChannel)
+    private async Task<UserChannel> HandlePreviousRegister(UserChannel previousUserChannel)
     {
         var verification = _verificationService.GetAllAsync().Result.LastOrDefault(v =>
-                v?.Id == oldUserChannel.Verification?.Id, null
+                v?.Id == previousUserChannel.Verification?.Id, null
         );
         if (verification == null)
         {
@@ -435,9 +435,9 @@ public class AuthService : IAuthService
         }
 
         CheckIsVerified(verification);
-        CheckVerificationInterval(verification);
+        CheckVerificationInterval(verification,previousUserChannel);
         return await UpdateUserChannelRecord(
-            oldUserChannel,
+            previousUserChannel,
             await UpdateVerificationRecord(verification, Helpers.GenerateVerificationCode())
         );
     }
@@ -492,11 +492,14 @@ public class AuthService : IAuthService
         );
     }
 
-    private static void CheckVerificationInterval(Verification verification)
+    private static void CheckVerificationInterval(Verification verification, UserChannel previousUserChannel)
     {
         if (IsVerificationValid(verification))
         {
-            throw Helpers.CreateAuthException(AuthServiceError.VerificationIsNotExpired);
+            throw Helpers.CreateAuthException(
+                AuthServiceError.VerificationIsNotExpired,
+                new { UserChannelId = previousUserChannel.Id }
+            );
         }
     }
 
