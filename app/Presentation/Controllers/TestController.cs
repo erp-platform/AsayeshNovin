@@ -1,6 +1,9 @@
-﻿using Infrastructure.Persistence;
+﻿using Core.Presentation;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Errors;
 using UMS.Authentication.Application.Authorization;
+using UMS.Authentication.Application.Dtos;
 
 namespace Presentation.Controllers;
 
@@ -48,5 +51,23 @@ public class TestController : ControllerBase
             IP = HttpContext.Connection.RemoteIpAddress?.ToString(),
             Client = Request.Headers["User-Agent"].ToString()
         });
+    }
+
+    [Authorize]
+    [ExceptionHandler]
+    [ProducesResponseType(typeof(ResponseDto<string>), 400)]
+    [HttpGet("Error")]
+    public JsonResult ErrorTest()
+    {
+        var number = new Random().Next(1, 5);
+        const string text = "Error number: {number}";
+        throw number switch
+        {
+            1 => new AppException { ErrorText = number.ToString() },
+            2 => new ArgumentException(text),
+            3 => new ArithmeticException(text),
+            4 => new ApplicationException(text),
+            _ => new FormatException(text)
+        };
     }
 }

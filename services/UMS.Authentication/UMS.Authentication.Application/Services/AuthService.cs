@@ -1,5 +1,7 @@
 using Core.Application.Services;
 using Core.Infrastructure.Repositories;
+using Core.Presentation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Application.Interfaces;
 using UMS.Authentication.Application.Utility;
@@ -7,12 +9,12 @@ using UMS.Authentication.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Scrypt;
 using UMS.Authentication.Application.Authorization;
+using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
 using UMS.Authentication.Application.Dtos.UserDtos;
 using UMS.Authentication.Application.Dtos.VerificationDtos;
-using static System.String;
 
 namespace UMS.Authentication.Application.Services;
 
@@ -51,7 +53,7 @@ public class AuthService : IAuthService
         _channelRepository = channelRepository;
     }
 
-    public async Task<UserChannelResponseDto> SignUp(SignUpDto signUpDto)
+    public async Task<ResponseDto<UserChannelResponseDto>> SignUp(SignUpDto signUpDto)
     {
         var oldUserChannel = _userChannelService.GetAllAsync().Result.FirstOrDefault(userChannel =>
             userChannel?.Channel.AId == signUpDto.ChannelId &&
@@ -60,34 +62,9 @@ public class AuthService : IAuthService
             ? HandleNewRegister(signUpDto)
             : HandleOldRegister(oldUserChannel));
         await SendVerificationCodeToChannel(userChannel);
-        return new UserChannelResponseDto
+        return new ResponseDto<UserChannelResponseDto>
         {
-            Id = userChannel.Id,
-            Value = userChannel.Value,
-            IsDefault = userChannel.IsDefault,
-            UserId = userChannel.User?.Id,
-            Channel = userChannel.Channel.AId,
-            VerificationId = userChannel.Verification?.Id,
-            PasswordResets = null,
-            Logins = null
-        };
-    }
-
-    public async Task<UserChannelResponseDto> Verify(VerifyDto verifyDto)
-    {
-        var userChannel = await _userChannelService.FindByIdAsync(verifyDto.UserChannelId);
-        var verification = userChannel?.Verification;
-        if (verification == null)
-            throw new Exception(
-                $"There's no Verification associated with UserChannel with id: \"{verifyDto.UserChannelId}\"");
-
-        if (userChannel != null && verification.Code == verifyDto.Code)
-        {
-            if (verification.IsVerified)
-                throw new Exception($"Verification with id: \"{verification.Id}\" is already verified.");
-
-            await VerifyUserChannel(userChannel);
-            return new UserChannelResponseDto
+            Data = new UserChannelResponseDto
             {
                 Id = userChannel.Id,
                 Value = userChannel.Value,
@@ -97,78 +74,174 @@ public class AuthService : IAuthService
                 VerificationId = userChannel.Verification?.Id,
                 PasswordResets = null,
                 Logins = null
-            };
-        }
-
-        throw new ArgumentException(
-            $"Code: {verifyDto.Code} is an incorrect code for UserChannel with id: \"{verifyDto.UserChannelId}\"");
+            }
+        };
     }
 
-    public async Task<UserResponseDto> SetCredential(CredentialDto credentialDto)
+    public async Task<ResponseDto<UserChannelResponseDto>> Verify(VerifyDto verifyDto)
+    {
+        var userChannel = await _userChannelService.FindByIdAsync(verifyDto.UserChannelId);
+        var verification = userChannel?.Verification;
+        if (verification == null)
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelWithoutVerification,
+                httpCode: StatusCodes.Status404NotFound,
+                data: verifyDto
+            );
+        }
+
+        if (userChannel == null)
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelNotFound,
+                httpCode: StatusCodes.Status404NotFound,
+                data: verifyDto
+            );
+        }
+
+        if (verification.Code != verifyDto.Code)
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.VerificationCodeIncorrect,
+                data: verifyDto
+            );
+        }
+
+        CheckIsVerified(verification);
+
+        await VerifyUserChannel(userChannel);
+        return new ResponseDto<UserChannelResponseDto>
+        {
+            Data = new UserChannelResponseDto
+            {
+                Id = userChannel.Id,
+                Value = userChannel.Value,
+                IsDefault = userChannel.IsDefault,
+                UserId = userChannel.User?.Id,
+                Channel = userChannel.Channel.AId,
+                VerificationId = userChannel.Verification?.Id,
+                PasswordResets = null,
+                Logins = null
+            }
+        };
+    }
+
+    public async Task<ResponseDto<UserResponseDto>> SetCredential(CredentialDto credentialDto)
     {
         var userChannel = await _userChannelService.FindByIdAsync(credentialDto.UserChannelId);
         if (userChannel == null)
-            throw new ArgumentException($"There's no UserChannel with id: \"{credentialDto.UserChannelId}\"");
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelNotFound,
+                httpCode: StatusCodes.Status404NotFound,
+                data: credentialDto
+            );
+        }
+
         if (userChannel.User != null)
-            throw new Exception(
-                $"Credential for the User with UserChannel with id: \"{credentialDto.UserChannelId}\" is already set.");
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.CredentialAlreadySet,
+                data: credentialDto
+            );
+        }
+
         var verification = userChannel.Verification;
         if (verification == null)
-            throw new ArgumentException($"UserChannel with id: \"{userChannel.Id}\" has no Verification.");
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelWithoutVerification,
+                httpCode: StatusCodes.Status404NotFound,
+                data: credentialDto
+            );
+        }
+
         if (!verification.IsVerified)
-            throw new ArgumentException(
-                $"UserChannel with id: \"{userChannel.Id}\" and Verification with id: \"{verification.Id}\" is not verified.");
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelNotVerified,
+                httpCode: StatusCodes.Status401Unauthorized,
+                data: credentialDto
+            );
+        }
+
         var user = await _userService.CreateAsync(new UserCreateDto
         {
             Username = credentialDto.Username,
             Password = credentialDto.Password,
             VerificationId = verification.Id
         });
+
+        if (user == null)
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.DatabaseError,
+                httpCode: StatusCodes.Status500InternalServerError,
+                data: credentialDto
+            );
+        }
+
         await _userChannelService.UpdateAsync(userChannel.Id, new UserChannelUpdateDto
         {
             User = user
         });
-        if (user != null)
+
+        return new ResponseDto<UserResponseDto>
         {
-            return new UserResponseDto
+            Data = new UserResponseDto
             {
                 Username = user.Username,
                 VerificationId = user.VerificationId,
-                Channels = null
-            };
-        }
-
-        throw new Exception(
-            $"Failed to create User for UserChannel with id: \"{userChannel.Id}\" and Verification with id: \"{verification.Id}\"");
+                Channels = user.Channels.Select(u => new UserChannelResponseDto
+                {
+                    Id = u.Id,
+                    Value = u.Value,
+                    IsDefault = u.IsDefault,
+                    Channel = u.Channel.AId
+                })
+            }
+        };
     }
 
-    public async Task<AuthLoginResponseDto> Login(AuthLoginDto authLoginDto)
+    public async Task<ResponseDto<AuthLoginResponseDto>> Login(AuthLoginDto authLoginDto)
     {
         var user = (await _userService.GetAllAsync()).FirstOrDefault(u =>
             u?.Username == authLoginDto.Username &&
             _encoder.Compare(authLoginDto.Password, u.Password), null);
         if (user == null)
-            throw new Exception("Username or password is incorrect.");
-        return new AuthLoginResponseDto
         {
-            User = new UserResponseDto
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UsernamePasswordError,
+                data: authLoginDto,
+                httpCode: StatusCodes.Status401Unauthorized
+            );
+        }
+
+        return new ResponseDto<AuthLoginResponseDto>
+        {
+            Data = new AuthLoginResponseDto
             {
-                Username = user.Username,
-                VerificationId = user.VerificationId,
-                Channels = user.Channels.Select(a => new UserChannelResponseDto
+                User = new UserResponseDto
                 {
-                    Id = a.Id,
-                    Channel = a.Channel.AId,
-                    IsDefault = a.IsDefault,
-                    Value = a.Value,
-                    VerificationId = a.Verification?.Id
-                })
-            },
-            Token = _jwtUtils.GenerateJwtToken(user)
+                    Username = user.Username,
+                    VerificationId = user.VerificationId,
+                    Channels = user.Channels.Select(a => new UserChannelResponseDto
+                    {
+                        Id = a.Id,
+                        Channel = a.Channel.AId,
+                        IsDefault = a.IsDefault,
+                        Value = a.Value,
+                        VerificationId = a.Verification?.Id
+                    })
+                },
+                Token = _jwtUtils.GenerateJwtToken(user)
+            }
         };
     }
 
-    public async Task<PasswordResetRequestDto> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto)
+    public async Task<ResponseDto<PasswordResetRequestDto>> PasswordResetRequest(
+        PasswordResetRequestDto passwordResetRequestDto)
     {
         var result = Task.FromResult(passwordResetRequestDto);
 
@@ -177,7 +250,13 @@ public class AuthService : IAuthService
             .Where(uc => uc.Value == passwordResetRequestDto.Value)
             .ToListAsync()).FirstOrDefault();
         if (userChannel == null)
-            return await result;
+        {
+            return new ResponseDto<PasswordResetRequestDto>
+            {
+                Data = await result
+            };
+        }
+
         var token = Helpers.GeneratePasswordResetToken();
         await _passwordResetService.CreateAsync(new PasswordResetCreateDto
         {
@@ -188,22 +267,38 @@ public class AuthService : IAuthService
         //todo refactor
         await SendResetPasswordTokenToChannel(userChannel,
             $"http://asnp.ir/Authentication/PasswordReset/{token}");
-        return await result;
+        return new ResponseDto<PasswordResetRequestDto>
+        {
+            Data = await result
+        };
     }
 
-    public async Task<UserResponseDto> PasswordResetAction(string token, PasswordResetAction passwordResetAction)
+    public async Task<ResponseDto<UserResponseDto>> PasswordResetAction(string token,
+        PasswordResetAction passwordResetAction)
     {
         var passwordReset = (await _passwordResetService.GetAllAsync())
             .FirstOrDefault(pr => pr?.Token == token && !pr.IsUsed, null);
         var isPasswordResetExpired =
             (DateTime.UtcNow - passwordReset?.CreatedAt)?.TotalSeconds > Constants.PasswordResetTimer;
         if (passwordReset == null || isPasswordResetExpired)
-            throw new ArgumentException($"Password reset token is incorrect or already used: \"{token}\"");
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.PasswordResetTokenError,
+                httpCode: StatusCodes.Status404NotFound,
+                data: new { token }
+            );
+        }
 
         var userId = passwordReset.UserChannel?.User?.Id;
         if (userId == null)
-            throw new Exception("Somehow User is null");
-        //todo handling nulls
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.DatabaseError,
+                data: new { token },
+                httpCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
         var user = await _userService.UpdateAsync((Guid)userId, new UserUpdateDto
         {
             Password = passwordResetAction.Password
@@ -213,12 +308,22 @@ public class AuthService : IAuthService
             IsUsed = true
         });
         if (user == null)
-            throw new Exception("Failed to changed user password");
-        return new UserResponseDto
         {
-            Username = user.Username,
-            VerificationId = user.VerificationId,
-            Channels = null
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.DatabaseError,
+                data: new { token },
+                httpCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return new ResponseDto<UserResponseDto>
+        {
+            Data = new UserResponseDto
+            {
+                Username = user.Username,
+                VerificationId = user.VerificationId,
+                Channels = null
+            }
         };
     }
 
@@ -226,23 +331,27 @@ public class AuthService : IAuthService
     private async Task<Verification?> VerifyUserChannel(UserChannel userChannel)
     {
         var verification = userChannel.Verification;
-        if (verification != null)
+        if (verification == null)
         {
-            if (IsVerificationValid(verification))
-            {
-                return await _verificationService.UpdateAsync(
-                    verification.Id,
-                    new VerificationUpdateDto
-                    {
-                        IsVerified = true
-                    }
-                );
-            }
-
-            throw new ArgumentException($"Verification with id: \"{verification.Id}\" is expired!");
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelWithoutVerification,
+                httpCode: StatusCodes.Status404NotFound,
+                data: null
+            );
         }
 
-        throw new Exception($"UserChannel with id: \"{userChannel.Id}\" has no Verification.");
+        if (IsVerificationValid(verification))
+        {
+            return await _verificationService.UpdateAsync(
+                verification.Id,
+                new VerificationUpdateDto { IsVerified = true }
+            );
+        }
+
+        throw Helpers.CreateAuthException(
+            AuthServiceError.VerificationCodeExpired,
+            data: null
+        );
     }
 
     private async Task<UserChannel> HandleNewRegister(SignUpDto signUpDto)
@@ -251,20 +360,29 @@ public class AuthService : IAuthService
             .Where(ch => ch.AId == signUpDto.ChannelId)
             .ToListAsync()).FirstOrDefault();
 
-        if (channel != null)
+        if (channel == null)
         {
-            var userChannel = await _userChannelService.CreateAsync(new UserChannelCreateDto
-            {
-                Channel = channel,
-                Value = signUpDto.Value
-            });
-            if (userChannel == null) throw new Exception("Failed to create UserChannel DB record");
-
-            return await UpdateUserChannelRecord(userChannel, await CreateVerificationRecord());
+            var names = Enum.GetNames(typeof(Domain.Enums.Channel));
+            throw Helpers.CreateAuthException(
+                AuthServiceError.ChannelTypeError,
+                data: new { names }
+            );
         }
 
-        var names = Enum.GetNames(typeof(Domain.Enums.Channel));
-        throw new ArgumentException($"Channel must be one of these values: {Join(", ", names)}");
+        var userChannel = await _userChannelService.CreateAsync(new UserChannelCreateDto
+        {
+            Channel = channel,
+            Value = signUpDto.Value
+        });
+        if (userChannel == null)
+        {
+            throw Helpers.CreateAuthException(
+                AuthServiceError.DatabaseError,
+                httpCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return await UpdateUserChannelRecord(userChannel, await CreateVerificationRecord());
     }
 
     private async Task<UserChannel> HandleOldRegister(UserChannel oldUserChannel)
@@ -274,11 +392,15 @@ public class AuthService : IAuthService
         );
         if (verification == null)
         {
-            throw new Exception($"Failed to find Verification record for UserChannel with id: \"{oldUserChannel.Id}\"");
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.UserChannelWithoutVerification,
+                httpCode: StatusCodes.Status404NotFound,
+                data: null
+            );
         }
 
         CheckIsVerified(verification);
-        CheckVerificationInterval(verification, oldUserChannel);
+        CheckVerificationInterval(verification);
         return await UpdateUserChannelRecord(
             oldUserChannel,
             await UpdateVerificationRecord(verification, Helpers.GenerateVerificationCode())
@@ -288,7 +410,12 @@ public class AuthService : IAuthService
     private static void CheckIsVerified(Verification verification)
     {
         if (verification.IsVerified)
-            throw new Exception($"Verification with id: {verification.Id} is already verified!");
+        {
+            throw Helpers.CreateAuthException(
+                AuthServiceError.VerificationAlreadyVerified,
+                data: null
+            );
+        }
     }
 
     private async Task<UserChannel> UpdateUserChannelRecord(UserChannel userChannel, Verification verification)
@@ -299,7 +426,10 @@ public class AuthService : IAuthService
         });
         if (updatedUserChannel == null)
         {
-            throw new Exception("Failed to update UserChannel DB record.");
+            throw Helpers.CreateAuthException(
+                AuthServiceError.DatabaseError,
+                httpCode: StatusCodes.Status500InternalServerError
+            );
         }
 
         return updatedUserChannel;
@@ -310,7 +440,10 @@ public class AuthService : IAuthService
         return await _verificationService.CreateAsync(new VerificationCreateDto
         {
             Code = Helpers.GenerateVerificationCode()
-        }) ?? throw new Exception("Failed to create Verification database record.");
+        }) ?? throw Helpers.CreateAuthException(
+            AuthServiceError.DatabaseError,
+            httpCode: StatusCodes.Status500InternalServerError
+        );
     }
 
     private async Task<Verification> UpdateVerificationRecord(Verification verification, string code)
@@ -318,15 +451,17 @@ public class AuthService : IAuthService
         return await _verificationService.UpdateAsync(verification.Id, new VerificationUpdateDto
         {
             Code = code
-        }) ?? throw new Exception("Failed to update Verification database record.");
+        }) ?? throw Helpers.CreateAuthException(
+            AuthServiceError.DatabaseError,
+            httpCode: StatusCodes.Status500InternalServerError
+        );
     }
 
-    private static void CheckVerificationInterval(Verification verification, UserChannel oldUserChannel)
+    private static void CheckVerificationInterval(Verification verification)
     {
         if (IsVerificationValid(verification))
         {
-            throw new Exception(
-                $"Verification with id: {verification.Id} for UserChannel with id: {oldUserChannel.Id} is not expired yet!");
+            throw Helpers.CreateAuthException(AuthServiceError.VerificationIsNotExpired);
         }
     }
 
@@ -340,7 +475,10 @@ public class AuthService : IAuthService
         var name = userChannel.Channel.Name;
         if (name == Domain.Enums.Channel.Email.ToString())
         {
-            throw new NotImplementedException();
+            throw Helpers.CreateAuthException(
+                AuthServiceError.NotImplementedError,
+                httpCode: StatusCodes.Status501NotImplemented
+            );
         }
 
         if (name == Domain.Enums.Channel.Sms.ToString())
@@ -350,7 +488,10 @@ public class AuthService : IAuthService
 
         if (name == Domain.Enums.Channel.Call.ToString())
         {
-            throw new NotImplementedException();
+            throw Helpers.CreateAuthException(
+                AuthServiceError.NotImplementedError,
+                httpCode: StatusCodes.Status501NotImplemented
+            );
         }
     }
 
@@ -360,7 +501,10 @@ public class AuthService : IAuthService
         var name = userChannel.Channel.Name;
         if (name == Domain.Enums.Channel.Email.ToString())
         {
-            throw new NotImplementedException();
+            throw Helpers.CreateAuthException(
+                AuthServiceError.NotImplementedError,
+                httpCode: StatusCodes.Status501NotImplemented
+            );
         }
 
         if (name == Domain.Enums.Channel.Sms.ToString())
@@ -370,14 +514,17 @@ public class AuthService : IAuthService
 
         if (name == Domain.Enums.Channel.Call.ToString())
         {
-            throw new NotImplementedException();
+            throw Helpers.CreateAuthException(
+                AuthServiceError.NotImplementedError,
+                httpCode: StatusCodes.Status501NotImplemented
+            );
         }
     }
 
     private async Task HandleVerificationSmsChannel(UserChannel userChannel)
     {
         if (userChannel.Verification == null)
-            throw new Exception($"Verification for UserChannel with id: \"{userChannel.Id}\" is null.");
+            throw Helpers.CreateAuthException(AuthServiceError.UnknownError);
         await SendSms("Verify", userChannel.Verification.Code, userChannel.Value);
     }
 
@@ -391,7 +538,7 @@ public class AuthService : IAuthService
             var response = await _httpClient.GetAsync(uri);
             Console.WriteLine($"SMS Request HTTP Code: {response.StatusCode}");
         }
-        else throw new Exception("SMS SDK information is empty in appsettings.json!");
+        else throw Helpers.CreateAuthException(AuthServiceError.GeneralError);
     }
 
     private static string CreateSmsUri(string api, string template, string receptor, string text)

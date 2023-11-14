@@ -6,6 +6,7 @@ using UMS.Authentication.Domain.Entities;
 
 namespace UMS.Authentication.Application.Authorization;
 
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext context)

@@ -1,19 +1,23 @@
+using UMS.Authentication.Application.Dtos;
 using UMS.Authentication.Application.Dtos.AuthDtos;
 using UMS.Authentication.Application.Dtos.UserChannelDtos;
 using UMS.Authentication.Application.Dtos.UserDtos;
+
 namespace UMS.Authentication.Application.Interfaces;
 
 public interface IAuthService
 {
-    public Task<UserChannelResponseDto> SignUp(SignUpDto signUpDto);
+    public Task<ResponseDto<UserChannelResponseDto>> SignUp(SignUpDto signUpDto);
 
-    public Task<UserChannelResponseDto> Verify(VerifyDto verifyDto);
+    public Task<ResponseDto<UserChannelResponseDto>> Verify(VerifyDto verifyDto);
 
-    public Task<UserResponseDto> SetCredential(CredentialDto credentialDto);
+    public Task<ResponseDto<UserResponseDto>> SetCredential(CredentialDto credentialDto);
 
-    public Task<AuthLoginResponseDto> Login(AuthLoginDto authLoginDto);
+    public Task<ResponseDto<AuthLoginResponseDto>> Login(AuthLoginDto authLoginDto);
 
-    public Task<PasswordResetRequestDto> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto);
+    public Task<ResponseDto<PasswordResetRequestDto>> PasswordResetRequest(
+        PasswordResetRequestDto passwordResetRequestDto);
 
-    public Task<UserResponseDto> PasswordResetAction(string token, PasswordResetAction passwordResetAction);
+    public Task<ResponseDto<UserResponseDto>>
+        PasswordResetAction(string token, PasswordResetAction passwordResetAction);
 }

@@ -1,4 +1,4 @@
-using UMS.Authentication.Application.Dtos.AuthDtos;
+using UMS.Authentication.Application.Dtos.LoginDtos;
 using UMS.Authentication.Application.Dtos.PasswordResetDtos;
 
 namespace UMS.Authentication.Application.Dtos.UserChannelDtos;
@@ -6,7 +6,10 @@ namespace UMS.Authentication.Application.Dtos.UserChannelDtos;
 public class UserChannelResponseDto
 {
     public required Guid Id { get; set; }
+
+    /// <example>09338880330</example>
     public required string Value { get; set; }
+
     public required bool IsDefault { get; set; }
     public Guid? UserId { get; set; }
     public required int Channel { get; set; }
@@ -15,5 +18,5 @@ public class UserChannelResponseDto
     public virtual IEnumerable<PasswordResetResponseDto>? PasswordResets { get; set; } =
         new List<PasswordResetResponseDto>();
 
-    public virtual IEnumerable<AuthLoginResponseDto>? Logins { get; set; } = new List<AuthLoginResponseDto>();
+    public virtual IEnumerable<LoginResponseDto>? Logins { get; set; } = new List<LoginResponseDto>();
 }
