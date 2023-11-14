@@ -344,9 +344,9 @@ public class AuthService : IAuthService
                     {
                         User = new UserResponseDto
                         {
-                            Username = user?.Username,
-                            VerificationId = user?.VerificationId,
-                            Channels = user?.Channels.Select(a => new UserChannelResponseDto
+                            Username = user.Username,
+                            VerificationId = user.VerificationId,
+                            Channels = user.Channels.Select(a => new UserChannelResponseDto
                             {
                                 Id = a.Id,
                                 Channel = a.Channel.AId,
@@ -435,7 +435,7 @@ public class AuthService : IAuthService
         }
 
         CheckIsVerified(verification);
-        CheckVerificationInterval(verification,previousUserChannel);
+        CheckVerificationInterval(verification, previousUserChannel);
         return await UpdateUserChannelRecord(
             previousUserChannel,
             await UpdateVerificationRecord(verification, Helpers.GenerateVerificationCode())
