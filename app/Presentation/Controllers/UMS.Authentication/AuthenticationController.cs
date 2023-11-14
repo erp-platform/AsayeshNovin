@@ -25,8 +25,11 @@ public class AuthenticationController : ControllerBase
     /// <summary>
     /// Sign up with various Channels (Call/SMS/Email)
     /// </summary>
-    [ProducesResponseType(typeof(ResponseDto<UserChannelResponseDto>), 200)]
     [HttpPost("SignUp")]
+    [ProducesResponseType(typeof(ResponseDto<UserChannelResponseDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<string[]>), 400)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 404)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 500)]
     public async Task<IActionResult> SignUp(SignUpDto signUpDto)
     {
         return Ok(await _authService.SignUp(signUpDto));
@@ -37,6 +40,9 @@ public class AuthenticationController : ControllerBase
     /// </summary>
     [HttpPost("Verify")]
     [ProducesResponseType(typeof(ResponseDto<UserChannelResponseDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 400)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 404)]
+    [ProducesResponseType(typeof(ResponseDto<VerifyDto>), 404)]
     public async Task<IActionResult> Verify(VerifyDto verifyDto)
     {
         return Ok(await _authService.Verify(verifyDto));
@@ -47,6 +53,10 @@ public class AuthenticationController : ControllerBase
     /// </summary>
     [HttpPost("SetCredentials")]
     [ProducesResponseType(typeof(ResponseDto<UserResponseDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 400)]
+    [ProducesResponseType(typeof(ResponseDto<CredentialDto>), 401)]
+    [ProducesResponseType(typeof(ResponseDto<CredentialDto>), 404)]
+    [ProducesResponseType(typeof(ResponseDto<CredentialDto>), 500)]
     public async Task<IActionResult> SetCredential(CredentialDto credentialDto)
     {
         var user = (await _authService.SetCredential(credentialDto)).Data;
@@ -62,6 +72,7 @@ public class AuthenticationController : ControllerBase
     /// </summary>
     [HttpPost("Login")]
     [ProducesResponseType(typeof(ResponseDto<AuthLoginResponseDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<AuthLoginDto>), 401)]
     public async Task<IActionResult> Login(AuthLoginDto authLoginDto)
     {
         var response = (await _authService.Login(authLoginDto)).Data;
@@ -78,6 +89,7 @@ public class AuthenticationController : ControllerBase
     /// </summary>
     [HttpPost("PasswordReset")]
     [ProducesResponseType(typeof(ResponseDto<PasswordResetRequestDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 501)]
     public async Task<IActionResult> PasswordResetRequest(PasswordResetRequestDto passwordResetRequestDto)
     {
         return Ok(await _authService.PasswordResetRequest(passwordResetRequestDto));
@@ -90,6 +102,8 @@ public class AuthenticationController : ControllerBase
     /// <param name="passwordResetAction"></param>
     [HttpPost("PasswordReset/{token}")]
     [ProducesResponseType(typeof(ResponseDto<UserResponseDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<string>), 404)]
+    [ProducesResponseType(typeof(ResponseDto<string>), 500)]
     public async Task<IActionResult> PasswordResetAction(string token, PasswordResetAction passwordResetAction)
     {
         var user = (await _authService.PasswordResetAction(token, passwordResetAction)).Data;
