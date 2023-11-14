@@ -1,6 +1,5 @@
 using Core.Application.Services;
 using Core.Infrastructure.Repositories;
-using Core.Presentation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using UMS.Authentication.Application.Interfaces;
@@ -327,6 +326,53 @@ public class AuthService : IAuthService
         };
     }
 
+    public async Task<ResponseDto<AuthLoginResponseDto>> LoginWithChannel(LoginChannelDto loginChannelDto)
+    {
+        var userChannel = await _userChannelService.GetDbSet()
+            .FirstOrDefaultAsync(uc =>
+                uc.Value == loginChannelDto.Value &&
+                uc.Channel.AId == loginChannelDto.ChannelId
+            );
+        var user = userChannel?.User;
+        if (user != null)
+        {
+            if (_encoder.Compare(loginChannelDto.Password, userChannel?.User?.Password))
+            {
+                return new ResponseDto<AuthLoginResponseDto>
+                {
+                    Data = new AuthLoginResponseDto
+                    {
+                        User = new UserResponseDto
+                        {
+                            Username = user?.Username,
+                            VerificationId = user?.VerificationId,
+                            Channels = user?.Channels.Select(a => new UserChannelResponseDto
+                            {
+                                Id = a.Id,
+                                Channel = a.Channel.AId,
+                                IsDefault = a.IsDefault,
+                                Value = a.Value,
+                                VerificationId = a.Verification?.Id
+                            })
+                        },
+                        Token = _jwtUtils.GenerateJwtToken(user)
+                    }
+                };
+            }
+        }
+        else
+        {
+            throw Helpers.CreateAuthException(
+                error: AuthServiceError.DatabaseError,
+                httpCode: StatusCodes.Status404NotFound
+            );
+        }
+
+        throw Helpers.CreateAuthException(
+            error: AuthServiceError.UsernamePasswordError,
+            httpCode: StatusCodes.Status401Unauthorized
+        );
+    }
 
     private async Task<Verification?> VerifyUserChannel(UserChannel userChannel)
     {
@@ -356,18 +402,7 @@ public class AuthService : IAuthService
 
     private async Task<UserChannel> HandleNewRegister(SignUpDto signUpDto)
     {
-        var channel = (await _channelRepository.GetDbSet()
-            .Where(ch => ch.AId == signUpDto.ChannelId)
-            .ToListAsync()).FirstOrDefault();
-
-        if (channel == null)
-        {
-            var names = Enum.GetNames(typeof(Domain.Enums.Channel));
-            throw Helpers.CreateAuthException(
-                AuthServiceError.ChannelTypeError,
-                data: new { names }
-            );
-        }
+        var channel = await GetChannelById(signUpDto.ChannelId);
 
         var userChannel = await _userChannelService.CreateAsync(new UserChannelCreateDto
         {
@@ -470,6 +505,7 @@ public class AuthService : IAuthService
         return (DateTime.UtcNow - verification.UpdatedAt).TotalSeconds <= Constants.SmsTimer;
     }
 
+    //todo refactor
     private async Task SendVerificationCodeToChannel(UserChannel userChannel)
     {
         var name = userChannel.Channel.Name;
@@ -545,5 +581,19 @@ public class AuthService : IAuthService
     {
         return
             $"https://api.kavenegar.com/v1/{api}/verify/lookup.json?template={template}&receptor={receptor}&token={text}";
+    }
+
+    private async Task<Channel> GetChannelById(int id)
+    {
+        var channel = (await _channelRepository.GetDbSet()
+            .Where(ch => ch.AId == id)
+            .ToListAsync()).FirstOrDefault();
+
+        if (channel != null) return channel;
+        var names = Enum.GetNames(typeof(Domain.Enums.Channel));
+        throw Helpers.CreateAuthException(
+            AuthServiceError.ChannelTypeError,
+            data: new { names }
+        );
     }
 }

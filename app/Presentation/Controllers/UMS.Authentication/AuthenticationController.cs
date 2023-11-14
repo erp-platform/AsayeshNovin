@@ -113,4 +113,15 @@ public class AuthenticationController : ControllerBase
             user?.VerificationId
         });
     }
+
+    /// <summary>
+    /// Login with UserChannel
+    /// </summary>
+    [ProducesResponseType(typeof(ResponseDto<AuthLoginResponseDto>), 200)]
+    [ProducesResponseType(typeof(ResponseDto<object?>), 401)]
+    [HttpPost("LoginChannel")]
+    public async Task<IActionResult> LoginWithChannel(LoginChannelDto loginChannelDto)
+    {
+        return Ok(await _authService.LoginWithChannel(loginChannelDto));
+    }
 }
