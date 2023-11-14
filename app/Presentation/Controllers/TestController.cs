@@ -42,14 +42,15 @@ public class TestController : ControllerBase
     [HttpGet("Ping")]
     public Task<IActionResult> Ping() => Task.FromResult<IActionResult>(Ok("Pong"));
 
-    [Authorize]
     [HttpGet("UserAgent")]
     public JsonResult UserAgent()
     {
         return new JsonResult(new
         {
             IP = HttpContext.Connection.RemoteIpAddress?.ToString(),
-            Client = Request.Headers["User-Agent"].ToString()
+            Client = Request.Headers["User-Agent"].ToString(),
+            DateTime.UtcNow,
+            DateTime.Now
         });
     }
 

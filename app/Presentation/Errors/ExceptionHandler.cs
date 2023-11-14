@@ -19,7 +19,7 @@ public class ExceptionHandler : Attribute, IExceptionFilter
                 Data = exception.ResponseData,
                 Error = new ErrorDto
                 {
-                    ErrorText = exception.ErrorText,
+                    Error = exception.ErrorText,
                     Stacktrace = context.Exception.StackTrace?.Trim().Split("\r\n"),
                     ExceptionMessage = context.Exception.Message.Trim(),
                     InnerExceptionMessage = context.Exception.InnerException?.Message
@@ -33,7 +33,7 @@ public class ExceptionHandler : Attribute, IExceptionFilter
                 Data = null,
                 Error = new ErrorDto
                 {
-                    ErrorText = null,
+                    Error = null,
                     Stacktrace = context.Exception.StackTrace?.Trim().Split("\r\n"),
                     ExceptionMessage = context.Exception.Message.Trim(),
                     InnerExceptionMessage = context.Exception.InnerException?.Message
