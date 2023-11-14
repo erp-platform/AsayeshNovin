@@ -54,11 +54,11 @@ public class AppDbContext : DbContext
                 switch (entry)
                 {
                     case { State: EntityState.Added }:
-                        entity.CreatedAt = DateTime.UtcNow;
-                        entity.UpdatedAt = DateTime.UtcNow;
+                        entity.CreatedAt = DateTime.Now;
+                        entity.UpdatedAt = DateTime.Now;
                         break;
                     case { State: EntityState.Modified }:
-                        entity.UpdatedAt = DateTime.UtcNow;
+                        entity.UpdatedAt = DateTime.Now;
                         break;
                 }
             }
