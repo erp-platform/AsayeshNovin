@@ -17,6 +17,11 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="UoW\IUnitOfWorkAuthentication.cs" />
+      <Compile Remove="UoW\UnitOfWorkAuthentication.cs" />
+    </ItemGroup>
+
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
