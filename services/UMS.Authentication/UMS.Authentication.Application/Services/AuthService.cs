@@ -107,7 +107,7 @@ public class AuthService : IAuthService
             );
         }
 
-        CheckIsVerified(verification);
+        CheckIsVerified(verification, userChannel);
 
         await VerifyUserChannel(userChannel);
         return new ResponseDto<UserChannelResponseDto>
@@ -434,21 +434,24 @@ public class AuthService : IAuthService
             );
         }
 
-        CheckIsVerified(verification);
-        CheckVerificationInterval(verification,previousUserChannel);
+        CheckIsVerified(verification, previousUserChannel);
+        CheckVerificationInterval(verification, previousUserChannel);
         return await UpdateUserChannelRecord(
             previousUserChannel,
             await UpdateVerificationRecord(verification, Helpers.GenerateVerificationCode())
         );
     }
 
-    private static void CheckIsVerified(Verification verification)
+    private static void CheckIsVerified(Verification verification, UserChannel userChannel)
     {
         if (verification.IsVerified)
         {
             throw Helpers.CreateAuthException(
                 AuthServiceError.VerificationAlreadyVerified,
-                data: null
+                data: new
+                {
+                    userChannelId = userChannel.Id
+                }
             );
         }
     }
