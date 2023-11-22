@@ -265,7 +265,7 @@ public class AuthService : IAuthService
         });
         //todo refactor
         await SendResetPasswordTokenToChannel(userChannel,
-            $"http://asnp.ir/Authentication/PasswordReset/{token}");
+            $"https://ansp.ir/password-reset/{token}");
         return new ResponseDto<PasswordResetRequestDto>
         {
             Data = await result
